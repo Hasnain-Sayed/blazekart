@@ -85,4 +85,17 @@ If you discover any issues or have suggestions for improvement, please open an I
 
 ---
 
+
+👨‍💻 Author
+
+Hasnain Sayed
+Full Stack Developer
+Creator of BlazeKart
+
+⭐ If You Like This Project
+
+Give it a star ⭐
+Fork it 🍴
+Build on it 🚀
+
 > Built with ❤️ using Django 5 · Demonstrates full-stack development across auth, e-commerce logic, email integration, and secure configuration.
