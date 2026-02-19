@@ -1,0 +1,441 @@
+{% load static %}
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="cache-control" content="max-age=604800" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<title>BlazeKart | One of the Biggest Online Shopping Platform</title>
+
+
+<link href="{% static 'images/favicon.ico'%}" rel="shortcut icon" type="image/x-icon">
+
+<!-- jQuery -->
+<script src="{% static 'js/jquery-2.0.0.min.js'%} " type="text/javascript"></script>
+
+<!-- Bootstrap4 files-->
+<script src="{% static 'js/bootstrap.bundle.min.js'%}" type="text/javascript"></script>
+<link href="{% static 'css/bootstrap.css'%}" rel="stylesheet" type="text/css"/>
+
+<!-- Font awesome 5 -->
+<link href="{% static 'fonts/fontawesome/css/all.min.css'%}" type="text/css" rel="stylesheet">
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+
+
+<!-- custom style -->
+<link href="{% static 'css/ui.css'%}" rel="stylesheet" type="text/css"/>
+<link href="{% static 'css/responsive.css'%}" rel="stylesheet" media="only screen and (max-width: 1200px)" />
+<!-- Google Fonts for clean typography -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- Typed.js for animated text -->
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js"></script>
+
+<!-- Animate.css for caption fade effect -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+<!-- custom javascript -->
+<script src="{% static 'js/script.js'%}" type="text/javascript"></script>
+
+
+{% comment %} <script>
+  // Auto-hide messages after 3 seconds
+  setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(alert => {
+      // Use Bootstrap's built-in alert() function to remove it properly
+      const alertInstance = bootstrap.Alert.getOrCreateInstance(alert);
+      alertInstance.close();  // Closes and removes from DOM
+    });
+  }, 3000);
+</script> {% endcomment %}
+
+<!-- base.html (head) - include SDK only here once -->
+<script src="https://www.paypal.com/sdk/js?client-id=ARgSXlzyGkN6HG_Xu7Ok-b2JtNU1oivlER35a6bffWqHfo4SwoLTN2IiRx0bedJaImM681s70DggeHk1&currency=USD"></script>
+<style>
+/* ================= BRAND SYSTEM ================= */
+:root {
+    --brand-primary: #6366f1;        /* Purple */
+    --brand-primary-dark: #4f46e5;
+    --brand-soft: #eef2ff;
+    --brand-border: #c7d2fe;
+}
+/* ================= PAGINATION ================= */
+
+.page-link {
+    color: var(--brand-primary);
+    border-radius: 10px;
+    border: 1px solid var(--brand-border);
+    margin: 0 4px;
+}
+
+.page-link:hover {
+    color: #fff;
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+}
+
+.page-item.active .page-link {
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+    color: #fff;
+}
+
+.page-item.disabled .page-link {
+    opacity: 0.5;
+}
+
+.toast-wrapper {
+    position: fixed;
+    top: 12px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.toast {
+    background: #111827;
+    color: white;
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    pointer-events: auto;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.success { background: #12893eff; }
+.toast.error   { background: #c92222ff; }
+.toast.warning { background: #db8f0cff; }
+.toast.info    { background: #1759e7ff; }
+
+
+.animated-text {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.greatkart-logo {
+  width: 150px;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+/* ================= HEADER THEME ================= */
+
+.section-header {
+    background: #ffffff;
+}
+
+/* TOP BAR */
+.navbar {
+    background: linear-gradient(180deg,  #edeffdff, #e3e7fbff);
+    font-size: 0.85rem;
+}
+
+.navbar .nav-link {
+    color: #4b5563 !important;
+}
+
+.navbar .nav-link:hover {
+    color: #4338ca !important;
+}
+
+/* MAIN HEADER */
+.header-main {
+    background: #ffffff;
+    padding: 14px 0;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.dropdown-menu {
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+/* LOGO */
+.brand-wrap .logo {
+    max-height: 44px;
+}
+
+/* CATEGORY BUTTON */
+.category-wrap .btn-primary {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    border: none;
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-weight: 500;
+}
+
+.category-wrap .btn-primary:hover {
+    opacity: 0.95;
+}
+
+/* STORE BUTTON */
+.btn-outline-primary {
+    border-color: #6366f1;
+    color: #6366f1;
+    border-radius: 10px;
+    margin-right: 10px;
+}
+
+.btn-outline-primary:hover {
+    background: #6366f1;
+    color: #ffffff;
+}
+
+/* SEARCH BAR */
+.search .form-control {
+    border-radius: 12px 0 0 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: none;
+}
+
+.search .btn {
+    border-radius: 0 12px 12px 0;
+    background: #6366f1;
+    border: none;
+}
+
+.search .btn:hover {
+    background: #4f46e5;
+}
+.search input::placeholder {
+    color: #9ca3af;
+}
+
+/* USER WIDGET */
+.widget-header small {
+    color: #6b7280;
+}
+
+.widget-header a {
+    color: #4338ca;
+    font-weight: 500;
+}
+
+.widget-header a:hover {
+    text-decoration: underline;
+}
+
+/* CART ICON */
+.icon-sm {
+    background: #eef2ff;
+    border-color: #c7d2fe !important;
+}
+
+.icon-sm i {
+    color: #4338ca;
+}
+
+.notify {
+    background: #ef4444;
+    font-size: 0.7rem;
+}
+
+
+
+
+
+
+/* ================= FOOTER ================= */
+
+.main-footer {
+    background: linear-gradient(180deg, #edeffdff, #e3e7fbff);
+    color: #1f2937;
+    padding: 64px 0 28px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* TOP */
+.footer-top {
+    margin-bottom: 32px;
+}
+
+/* BRAND */
+.footer-brand h3 {
+    font-weight: 800;
+    color: #4338ca;
+    margin-bottom: 12px;
+}
+
+.footer-brand p {
+    color: #4b5563;
+    max-width: 460px;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* SOCIALS */
+.footer-socials {
+    margin-top: 14px;
+}
+
+.footer-socials a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin-right: 8px;
+    border-radius: 50%;
+    background: #eef2ff;
+    color: #4338ca;
+    transition: all 0.25s ease;
+}
+
+.footer-socials a:hover {
+    background: #4338ca;
+    color: #ffffff;
+}
+
+/* LINKS */
+.footer-links h5,
+.footer-contact h5 {
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 12px;
+}
+
+.footer-links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 8px;
+}
+
+.footer-links a {
+    color: #4f46e5;
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    color: #1d4ed8;
+}
+
+/* CONTACT */
+.footer-contact p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4b5563;
+    margin-bottom: 8px;
+}
+
+.footer-contact i {
+    color: #6366f1;
+}
+
+/* DIVIDER */
+.footer-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #c7d2fe, transparent);
+    margin-bottom: 18px;
+}
+
+/* BOTTOM */
+.footer-bottom p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+/* PAYMENTS */
+.footer-payments i {
+    font-size: 1.8rem;
+    margin-left: 12px;
+    color: #6b7280;
+    opacity: 0.75;
+}
+
+.footer-payments i:hover {
+    opacity: 1;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .footer-top {
+        text-align: center;
+    }
+
+    .footer-brand p {
+        margin: 0 auto;
+    }
+
+    .footer-contact p {
+        justify-content: center;
+    }
+}
+
+</style>
+{% block extra_css %} 
+
+
+{% endblock %}
+</head>
+<body>
+
+{% include "includes/header.html" %}
+
+
+{% block content %}
+
+
+{% endblock  %}
+{% include "includes/footer.html" %}
+
+
+<div class="toast-wrapper">
+<div id="toast" class="toast"></div>
+</div>
+<script>
+
+function showToast(message, type = "info") {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.className = `toast show ${type}`;
+
+    setTimeout(() => {
+        toast.className = "toast"; 
+    }, 3000);
+}
+</script>
+
+{% if messages %}
+<script>
+  {% for message in messages %}
+    showToast("{{ message|escapejs }}", "{{ message.tags }}");
+  {% endfor %}
+</script>
+{% endif %}
+
+{% block extra_js %}
+
+{% endblock %}
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<!-- Bootstrap 5 JS (important!) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

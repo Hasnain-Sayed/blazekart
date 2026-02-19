@@ -1,0 +1,332 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{{user.first_name}} {{user.last_name}}'s Dashboard{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 4 CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
+    <link href="{% static 'images/favicon.ico'%}" rel="shortcut icon" type="image/x-icon">
+    <link href="{% static 'fonts/fontawesome/css/all.min.css'%}" type="text/css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            margin:0;
+            height: 100vh;
+            overflow: hidden; 
+        }
+        .dashboard-shell {
+            padding: 24px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+        .container-fluid,
+        .row.no-gutters {
+            height: 100%;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            height: 100%;
+            background-color: #ffffff;
+            border-right: 1px solid #e5e5e5;
+            position: relative;
+        }
+
+        .sidebar .nav-link {
+            color: #555;
+            padding: 12px 20px;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #eef2ff;
+            color: #3f51b5;
+            font-weight: 500;
+        }
+
+        .sidebar-bottom {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+        }
+
+        /* Top bar */
+        .topbar {
+            height: 72px;
+            flex-shrink: 0;
+            border-bottom: 1px solid #e5e5e5;
+            background: #ffffff;
+        }
+        .avatar-wrapper {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: box-shadow 0.2s ease, transform 0.15s ease;
+        }
+        .avatar-wrapper:hover {
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.4);
+            transform: scale(1.03);
+        }
+
+        .profile-pic {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 50%;
+        }
+
+        /* Content */
+        .content-area {
+            flex:1;
+            padding: 30px;
+            background-color: #ffffff;
+            overflow-y: auto;  
+        }
+        .logo-img {
+            height: 35px;
+            width: auto;
+            padding-left:5px;
+        }
+        .logo-bar {
+            height: 72px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .welcome-text {
+            font-family: "Lilita One", sans-serif;
+            font-size: 28px;
+            font-weight: 400;
+            color: #222;
+            font-style: normal;
+            letter-spacing: 0.2px;
+        }
+        .phrase{
+            font-size:20px;
+        }
+
+        .username {
+            font-weight: 300;
+            color: #6f42c1;
+        }
+        .col-md-10 {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        /* Back Button */
+        .back-btn {
+            display: flex;
+            height: 3em;
+            width: 70px;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffffff;
+            border-radius: 6px;
+            letter-spacing: 1px;
+            transition: all 0.2s linear;
+            cursor: pointer;
+            border: none;
+        }
+
+        .back-btn svg {
+            margin-right: 6px;
+            font-size: 20px;
+            transition: all 0.4s ease-in;
+        }
+
+        .back-btn:hover svg {
+            transform: translateX(-5px);
+        }
+
+        .back-btn:hover {
+            box-shadow: 9px 9px 33px #c7c7c7ff,
+                    -9px -9px 33px #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .back-btn-wrapper {
+            text-decoration: none;
+        }
+        .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #111827;
+        color: white;
+        padding: 14px 20px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+        z-index: 9999;
+        }
+
+        .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+        }
+
+        .toast.success { background: #16a34a; }
+        .toast.error { background: #dc2626; }
+
+        a {
+        text-decoration: none;
+        }
+
+        a:hover {
+        text-decoration: none;
+        }
+        
+     .logo-bar {
+        height: 72px;
+        border-bottom: 1px solid #e5e5e5;
+        padding: 0 !important;
+    }
+
+    .logo-bar-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 72px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        padding: 0 10px;
+    }
+
+    .logo-bar-link:hover {
+        background-color: #f8f9fa;
+        transform: translateX(-3px);
+    }
+
+    .logo-bar-link:active {
+        transform: translateX(-5px) scale(0.99);
+    }
+
+    .back-logo-full {
+        width: 98%;
+        height: auto;
+        max-height: 68px;
+        object-fit: contain;
+        display: block;
+        margin-left: 3px;
+    }
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+
+<div class="dashboard-shell">
+<div class="container-fluid h-100">
+    <div class="row no-gutters h-100">
+
+        <!-- LEFT: Logo + Sidebar (20%) -->
+        <div class="col-md-2 sidebar">
+
+            <!-- Logo -->
+            <a href="{% url 'home' %}" 
+            class="logo-bar-link"
+            data-toggle="tooltip"
+            data-placement="right"
+            title="Go back to Home">
+                <img src="{% static 'images/back to home.png' %}" alt="Back to BlazeKart" class="back-logo-full">
+            </a>
+
+            <!-- Navigation -->
+            <div class="nav flex-column pt-3">
+                <a class="nav-link phrase {% block nav_dashboard %}{% endblock %}" href="{% url 'dashboard' %}">Dashboard</a>
+                <a class="nav-link phrase {% block nav_profile %}{% endblock %}" href="{% url 'profile' %}">Profile</a>
+                <a class="nav-link phrase {% block nav_orders %}{% endblock %}" href="{% url 'recent_orders' %}">Recent Orders</a>
+                <a class="nav-link phrase {% block nav_cart %}{% endblock %}" href="{% url 'dbcart' %}">My Cart</a>
+                <a class="nav-link phrase {% block nav_wishlist %}{% endblock %}" href="{% url 'dbwishlist' %}">My Wishlist</a>
+                <a class="nav-link phrase {% block nav_payments %}{% endblock %}" href="{% url 'payments_methods' %}">Payments</a>
+            </div>
+
+            <!-- Bottom Links -->
+            <div class="sidebar-bottom nav flex-column">
+                <a class="nav-link phrase {% block nav_help %}{% endblock %}" href="{% url 'help_support' %}">Help & Support</a>
+                <a class="nav-link phrase text-danger" href="{% url 'logout' %}"title="Sign out from your account">Logout</a>
+            </div>
+
+        </div>
+
+        <!-- RIGHT: Topbar + Content (80%) -->
+        <div class="col-md-10">
+
+            <!-- Topbar -->
+            <div class="topbar d-flex justify-content-between align-items-center px-4">
+                <span class="welcome-text">
+                    Dashboard <span class="username">Overview</span>.
+                </span>
+
+                 <a href="{% url 'profile' %}" class="avatar-wrapper">
+                    <img src="
+                    {% if request.user.profile.profile_pic %}
+                        {{ request.user.profile.profile_pic.url }}
+                        {% else %}
+                        {% static 'images/avatars/default-avatar.png' %}
+                    {% endif %}" 
+                    class="profile-pic" alt="Profile">
+
+                </a>
+            </div>
+
+            <!-- Content -->
+            <main class="content-area">
+                {% block content %}
+
+
+
+
+
+                {% endblock %}
+            </main>
+
+        </div>
+
+    </div>
+</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+    function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = `toast show ${type}`;
+
+    setTimeout(() => {
+        toast.className = 'toast';
+    }, 3000);
+    }
+
+</script>
+
+{% block extra_js %}{% endblock %}
+<div id="toast" class="toast"></div>
+{% if messages %}
+<script>
+  {% for message in messages %}
+    showToast("{{ message }}", "{{ message.tags }}");
+  {% endfor %}
+</script>
+{% endif %}
+
+</body>
+</html>

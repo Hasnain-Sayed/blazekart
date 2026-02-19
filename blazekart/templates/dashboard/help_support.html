@@ -1,0 +1,452 @@
+{% extends 'dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Help & Support{% endblock %}
+
+{% block nav_help %}active{% endblock %}
+
+{% block extra_css %}
+.help-page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* HERO */
+.help-hero {
+    background: linear-gradient(135deg, #6e70f8ff, #9569fcff);
+    color: white;
+    padding: 50px;
+    border-radius: 16px;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.help-hero h1 {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.help-search {
+    margin-top: 20px;
+    position: relative;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.help-search input {
+    width: 100%;
+    padding: 14px 45px 14px 18px;
+    border-radius: 999px;
+    border: none;
+    outline: none;
+}
+
+.help-search i {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+}
+
+/* SECTIONS */
+.help-section {
+    margin-bottom: 40px;
+}
+
+.help-section h3 {
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* GRID */
+.help-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.help-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+.help-card i {
+    font-size: 24px;
+    color: #7174f4ff;
+    margin-bottom: 10px;
+}
+
+.help-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* FAQ */
+.faq-item {
+    background: #ffffff;
+    padding: 18px 22px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 14px;
+}
+
+.faq-item p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-top: 6px;
+     max-width: 90%;
+    line-height: 1.6;
+}
+
+
+/* CONTACT */
+.contact-box {
+    text-align: center;
+}
+
+.support-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 12px 26px;
+    border-radius: 999px;
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.support-btn:hover {
+    background: #1d4ed8;
+    color:white;
+}
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.faq-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 18px 20px;
+    cursor: pointer;
+    background: #ffffff;
+    transition: box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.faq-item:hover {
+    background: #f8faff;
+}
+
+.faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.faq-icon {
+    font-size: 20px;
+    font-weight: 700;
+    transition: transform 0.25s ease;
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 10px;
+    line-height: 1.6;
+    transition: max-height 0.3s ease;
+}
+
+.faq-item.active {
+    border-color: #6366f1;
+    background: #f8fafc;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.faq-item.active .faq-answer {
+    max-height: 200px;
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(45deg); /* + turns into × */
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .faq-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 640px) {
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+{% endblock %}
+
+
+
+
+{% block content %}
+
+<div class="help-page">
+
+    <!-- HERO -->
+    <div class="help-hero">
+        <h1>BlazeKart Help Center</h1>
+        <p>Find answers instantly or reach out to us</p>
+
+        <div class="help-search">
+            <input type="text" id="faqSearch" placeholder="Search your question...">
+            <i class="fas fa-search"></i>
+        </div>
+    </div>
+
+    <!-- QUICK HELP -->
+    <div class="help-section">
+        <h3>Quick Help</h3>
+
+        <div class="help-grid">
+
+            <div class="help-card">
+                <i class="fas fa-box"></i>
+                <h4>Order Status</h4>
+                <p>Track orders, delivery status and updates.</p>
+            </div>
+
+            <div class="help-card">
+                <i class="fas fa-undo"></i>
+                <h4>Returns & Refunds</h4>
+                <p>Return policies, refunds & cancellations.</p>
+            </div>
+
+            <div class="help-card">
+                <i class="fas fa-shield-alt"></i>
+                <h4>Warranty</h4>
+                <p>Product warranty & replacement info.</p>
+            </div>
+
+            <div class="help-card">
+                <i class="fas fa-credit-card"></i>
+                <h4>Payments</h4>
+                <p>Payment methods, failed payments.</p>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="help-section" id="faq-section">
+        <h3>Frequently Asked Questions</h3>
+
+        <div class="faq-grid">
+
+            <!-- 1 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>How can I track my order?</span>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    You can track your order from <b>Recent Orders → Order Details</b>.
+                </div>
+            </div>
+
+            <!-- 2 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>How do I cancel an order?</span>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Orders can be cancelled before shipment from <b>Order Details</b>.
+                </div>
+            </div>
+
+            <!-- 3 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>How long does delivery take?</span>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Standard delivery usually takes <b>3–7 working days</b> depending on your location.
+                </div>
+            </div>
+
+            <!-- 4 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>My order is delayed. What should I do?</span>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Check tracking in <b>Recent Orders → Order Details</b>.  
+                    Contact support if delay exceeds the estimated delivery date.
+                </div>
+            </div>
+
+            <!-- 5 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>How long do refunds take?</span>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Refunds are processed within <b>5–7 working days</b>.
+                </div>
+            </div>
+
+            <!-- 6 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>What should I do if my payment fails?</span>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Try another payment method. If money was deducted, it will be refunded
+                    within <b>3–5 working days</b>.
+                </div>
+            </div>
+
+            <!-- 7 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Can I change my delivery address?</span>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    You can update your address from <b>Recent Orders → Order Details</b>
+                    before shipping starts.
+                </div>
+            </div>
+
+            <!-- 8 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>I received a wrong or damaged item. What now?</span>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Please contact support within <b>48 hours</b>.  
+                    We’ll arrange a replacement or refund after verification.
+                </div>
+            </div>
+
+            <!-- 9 -->
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>How do I contact customer support?</span>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Email us at <b>blazekart.help@gmail.com</b>.  
+                    Our team usually responds within 24 hours.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Is my payment information secure?</span>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes. All payments are processed through secure and encrypted payment gateways. We do not store your card details on our servers.
+                </div>
+            </div>
+
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>How can I update my profile information?</span>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    You can update your personal details from the <b>Profile</b> section in your dashboard at any time.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>Why is a product showing “Out of Stock”?</span>
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Products may go out of stock due to high demand. You can check back later or add the item to your wishlist to monitor availability.
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+    
+    
+    <!-- CONTACT -->
+    <div class="help-section contact-box">
+        <h3>Still need help?</h3>
+        <p>Contact our support team</p>
+
+        <a class="support-btn"
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=blazekart.help@gmail.com&su=Help Request"
+            target="_blank">
+            📧 Email Support
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // FAQ accordion
+    document.querySelectorAll('.faq-item').forEach(item => {
+        item.addEventListener('click', () => {
+            document.querySelectorAll('.faq-item').forEach(i => {
+                if (i !== item) i.classList.remove('active');
+            });
+            item.classList.toggle('active');
+        });
+    });
+
+    // Search filter ONLY (no scroll)
+    const searchInput = document.getElementById('faqSearch');
+    const faqItems = document.querySelectorAll('.faq-item');
+
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase();
+
+        faqItems.forEach(item => {
+            const text = item.innerText.toLowerCase();
+            item.style.display = text.includes(query) ? '' : 'none';
+        });
+    });
+
+});
+</script>
+
+
+
+{% endblock %}
+

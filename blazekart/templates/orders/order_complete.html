@@ -1,0 +1,1361 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Placed Successfully</title>
+    <link href="{% static 'fonts/fontawesome/css/all.min.css'%}" type="text/css" rel="stylesheet">
+    <link href="{% static 'images/favicon.ico'%}" rel="shortcut icon" type="image/x-icon">
+
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f3f4f6;
+            padding: 20px;
+        }
+
+        /* Order Placed Header */
+        .order-header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .order-header h1 {
+            color: #10b981;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .checkmark {
+            width: 50px;
+            height: 50px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: scaleIn 0.5s ease-out 0.3s backwards;
+        }
+
+        .checkmark::after {
+            content: '✓';
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .order-header p {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        /* Simple Truck Container */
+        .truck-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 150px;
+            margin: 0 auto 40px;
+            overflow: hidden;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Simple road line */
+        .road {
+            position: absolute;
+            bottom: 33px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: #374151;
+            border-top: 2px solid #4b5563;
+            border-bottom: 2px solid #1f2937;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+
+        .road::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: repeating-linear-gradient(
+                to right,
+                transparent 0,
+                transparent 15px,
+                #fbbf24 15px,
+                #fbbf24 35px
+            );
+            transform: translateY(-50%);
+        }
+
+        /* Truck wrapper - moves left to right */
+        .truck {
+            position: absolute;
+            left: -250px;
+            bottom: 48px;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            animation: moveTruckForward 6s ease-in-out infinite;
+        }
+
+        /* Truck CAB (front) */
+        .cab {
+            width: 70px;
+            height: 55px;
+            background: #4F46E5;
+            border-radius: 6px 6px 2px 2px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Windshield */
+        .cab::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 30px;
+            height: 25px;
+            background: #93c5fd;
+            border-radius: 3px;
+            border: 2px solid #3730a3;
+        }
+
+        /* Headlight */
+        .cab::after {
+            content: '';
+            position: absolute;
+            bottom: 10px;
+            right: 5px;
+            width: 8px;
+            height: 6px;
+            background: #fef08a;
+            border-radius: 2px;
+        }
+
+        /* Truck TRAILER (back) */
+        .trailer {
+            width: 140px;
+            height: 70px;
+            background: #4F46E5;
+            border-radius: 2px 8px 2px 2px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Package icon on trailer */
+        .package {
+            width: 35px;
+            height: 35px;
+            background: #fbbf24;
+            border: 2px solid #f59e0b;
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .package::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #d97706;
+            transform: translateY(-50%);
+        }
+
+        .package::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: #d97706;
+            transform: translateX(-50%);
+        }
+
+        /* Wheels */
+        .wheel {
+            width: 26px;
+            height: 26px;
+            background: #1f2937;
+            border-radius: 50%;
+            border: 3px solid #374151;
+            position: absolute;
+            bottom: -13px;
+            animation: spinWheel 0.4s linear infinite;
+        }
+
+        .wheel::before {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #6b7280;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Front wheel */
+        .wheel-front {
+            left: 22px;
+        }
+
+        /* Back wheels */
+        .wheel-back1 {
+            left: 25px;
+        }
+
+        .wheel-back2 {
+            right: 25px;
+        }
+
+        /* Exhaust smoke */
+        .smoke {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: rgba(156, 163, 175, 0.5);
+            border-radius: 50%;
+            top: 5px;
+            left: 15px;
+            animation: puff 1.2s ease-out infinite;
+        }
+
+        /* Receipt Card */
+        .receipt-card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: fadeInUp 0.8s ease-out 0.5s backwards;
+        }
+
+        .receipt-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .receipt-header h2 {
+            color: #1f2937;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .order-info {
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            gap: 25px;
+        }
+
+        .order-left, 
+        .order-right {
+            width: 50%;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+            border: 1px solid #e9d5ff;
+        }
+
+        .order-left p,
+        .order-right p {
+            margin: 10px 0;
+            color: #4b5563;
+            font-size: 1rem;
+        }
+
+        .order-left strong,
+        .order-right strong {
+            color: #1f2937;
+        }
+
+        /* Mobile responsive */
+        @media(max-width: 768px){
+            .order-info{
+                flex-direction: column;
+            }
+            .order-left, 
+            .order-right {
+                width: 100%;
+            }
+        }
+
+        .order-info p {
+            margin: 10px 0;
+            color: #4b5563;
+            font-size: 1rem;
+        }
+
+        .order-info strong {
+            color: #1f2937;
+        }
+
+        .ordered-items-section {
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.15);
+        }
+
+        .ordered-items-section h4 {
+            font-weight: 700;
+            color: #6d28d9;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ordered-items-section h4::before {
+            content: '🛍️';
+            font-size: 1.8rem;
+        }
+
+        .items-table-wrapper {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.1);
+            border: 1px solid #e9d5ff;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+
+        .table thead {
+            background: linear-gradient(135deg, #ab88fdff 0%, #a78bfa 100%);
+        }
+
+        .table thead th {
+            color: white;
+            padding: 18px 20px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .table tbody tr:hover {
+            background: #faf5ff;
+            transform: translateX(5px);
+        }
+
+        .table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .table tbody td {
+            padding: 18px 20px;
+            color: #374151;
+            font-size: 1rem;
+            border: none;
+        }
+
+        .table tbody td:first-child {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .table tbody td:nth-child(2),
+        .table tbody td:nth-child(4) {
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .table tbody td:nth-child(3) {
+            background: #f3e8ff;
+            color: #7c3aed;
+            font-weight: 700;
+            text-align: center;
+            border-radius: 6px;
+            min-width: 60px;
+        }
+
+        /* Invoice button */
+        .btn-invoice {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 8px;
+            background: #10b981;
+            color: #fff;
+            text-decoration: none;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .btn-invoice:hover {
+            background: #059669;
+        }
+
+        .btn-invoice i {
+            font-size: 1rem;
+        }
+
+        /* Tooltip */
+        .tooltip-btn .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #111827;
+            color: #fff;
+            font-size: 0.75rem;
+            padding: 6px 10px;
+            border-radius: 4px;
+            white-space: nowrap;
+            transition: 0.2s;
+            pointer-events: none;
+        }
+
+        .tooltip-btn:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        /* FIXED: Truck moves LEFT to RIGHT (forward) */
+        @keyframes moveTruckForward {
+            0% {
+                left: -250px;
+            }
+            100% {
+                left: calc(100% + 50px);
+            }
+        }
+
+        @keyframes spinWheel {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes puff {
+            0% {
+                transform: translate(0, 0) scale(0.8);
+                opacity: 0.6;
+            }
+            100% {
+                transform: translate(-25px, -20px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .order-header h1 {
+                font-size: 2rem;
+            }
+            
+            .truck-container {
+                height: 120px;
+            }
+            
+            .receipt-card {
+                padding: 20px;
+            }
+        }
+        @media (max-width: 600px) {
+            .receipt-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Order Placed Header -->
+    <div class="order-header">
+        <h1>
+            <div class="checkmark"></div>
+            Order Placed Successfully!
+        </h1>
+        <p>Your package is on its way</p>
+    </div>
+
+    <!-- Simple Truck Animation -->
+    <div class="truck-container">
+        <div class="road"></div>
+        
+        <div class="truck">
+            <!-- TRAILER (Back of truck) - comes first in HTML -->
+            <div class="trailer">
+                <div class="package"></div>
+                <div class="wheel wheel-back1"></div>
+                <div class="wheel wheel-back2"></div>
+            </div>
+            
+            <!-- CAB (Front of truck) - comes second so it's in front -->
+            <div class="cab">
+                <div class="smoke"></div>
+                <div class="wheel wheel-front"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Card -->
+    <div class="receipt-card">
+        <div class="receipt-header">
+            <h2>
+                <i class="fa fa-clipboard-list"></i>
+                <span>Order Details</span>
+            </h2>
+
+            <a href="{% url 'download_invoice' order.order_number %}"
+               class="btn-invoice tooltip-btn">
+                <i class="fa fa-download"></i>
+                <span>Invoice</span>
+                <span class="tooltip-text">Download Invoice</span>
+            </a>
+        </div>
+
+        <div class="order-info">
+    
+            <!-- LEFT SIDE — Order Details -->
+            <div class="order-left">
+                <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+                <p><strong>Transaction ID:</strong> {{ payment.payment_id }}</p>
+                <p><strong>Payment Method:</strong> {{ payment.payment_method }}</p>
+                {% if order.order_note %}
+                <p><strong>Order Note:</strong> {{ order.order_note }}</p>
+                {% endif %}
+            </div>
+
+            <!-- RIGHT SIDE — Totals -->
+            <div class="order-right">
+                <p><strong>Total Items Ordered:</strong> {{ order_count }}</p>
+                <p><strong>Subtotal:</strong> ${{ order.total }}</p>
+                <p><strong>Tax:</strong> ${{ order.tax }}</p>
+                <p><strong>Order Total:</strong> ${{ order.order_total }}</p>
+            </div>
+
+        </div>
+
+        <!-- ORDERED ITEMS SECTION -->
+        <div class="ordered-items-section">
+            <h4>Ordered Items</h4>
+
+            <div class="items-table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in ordered_items %}
+                        <tr>
+                            <td>{{ item.product.product_name }}</td>
+                            <td>${{ item.product_price }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ item.subtotal }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <p style="color: #2a4e96ff; text-align: center; margin-top: 30px;">
+            <strong>Thank you for your purchase! You will receive a confirmation email shortly.</strong>
+        </p>
+        <!-- Button -->
+        <p style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'home' %}" 
+            style="
+                background-color: #2a4e96ff;
+                color: #ffffff;
+                text-decoration: none;
+                padding: 12px 25px;
+                border-radius: 5px;
+                font-weight: bold;
+                display: inline-block;
+                font-family: Arial, sans-serif;
+            ">
+                Go to Home Page
+            </a>
+        </p>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Placed Successfully</title>
+    <link href="{% static 'fonts/fontawesome/css/all.min.css'%}" type="text/css" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f3f4f6;
+            padding: 20px;
+        }
+
+        /* Order Placed Header */
+        .order-header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .order-header h1 {
+            color: #10b981;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .checkmark {
+            width: 50px;
+            height: 50px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: scaleIn 0.5s ease-out 0.3s backwards;
+        }
+
+        .checkmark::after {
+            content: '✓';
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .order-header p {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        /* Simple Truck Container */
+        .truck-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 150px;
+            margin: 0 auto 40px;
+            overflow: hidden;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Simple road line */
+        .road {
+            position: absolute;
+            bottom: 33px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: #374151;
+            border-top: 2px solid #4b5563;
+            border-bottom: 2px solid #1f2937;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+
+        .road::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: repeating-linear-gradient(
+                to right,
+                transparent 0,
+                transparent 15px,
+                #fbbf24 15px,
+                #fbbf24 35px
+            );
+            transform: translateY(-50%);
+        }
+
+        /* Truck wrapper - moves left to right */
+        .truck {
+            position: absolute;
+            left: -250px;
+            bottom: 48px;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            animation: moveTruckForward 6s ease-in-out infinite;
+        }
+
+        /* Truck CAB (front) */
+        .cab {
+            width: 70px;
+            height: 55px;
+            background: #4F46E5;
+            border-radius: 6px 6px 2px 2px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Windshield */
+        .cab::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 30px;
+            height: 25px;
+            background: #93c5fd;
+            border-radius: 3px;
+            border: 2px solid #3730a3;
+        }
+
+        /* Headlight */
+        .cab::after {
+            content: '';
+            position: absolute;
+            bottom: 10px;
+            right: 5px;
+            width: 8px;
+            height: 6px;
+            background: #fef08a;
+            border-radius: 2px;
+        }
+
+        /* Truck TRAILER (back) */
+        .trailer {
+            width: 140px;
+            height: 70px;
+            background: #4F46E5;
+            border-radius: 2px 8px 2px 2px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Package icon on trailer */
+        .package {
+            width: 35px;
+            height: 35px;
+            background: #fbbf24;
+            border: 2px solid #f59e0b;
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .package::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #d97706;
+            transform: translateY(-50%);
+        }
+
+        .package::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: #d97706;
+            transform: translateX(-50%);
+        }
+
+        /* Wheels */
+        .wheel {
+            width: 26px;
+            height: 26px;
+            background: #1f2937;
+            border-radius: 50%;
+            border: 3px solid #374151;
+            position: absolute;
+            bottom: -13px;
+            animation: spinWheel 0.4s linear infinite;
+        }
+
+        .wheel::before {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #6b7280;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Front wheel */
+        .wheel-front {
+            left: 22px;
+        }
+
+        /* Back wheels */
+        .wheel-back1 {
+            left: 25px;
+        }
+
+        .wheel-back2 {
+            right: 25px;
+        }
+
+        /* Exhaust smoke */
+        .smoke {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: rgba(156, 163, 175, 0.5);
+            border-radius: 50%;
+            top: 5px;
+            left: 15px;
+            animation: puff 1.2s ease-out infinite;
+        }
+
+        /* Receipt Card */
+        .receipt-card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: fadeInUp 0.8s ease-out 0.5s backwards;
+        }
+
+        .receipt-card h2 {
+            color: #1f2937;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .order-info {
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            gap: 25px;
+        }
+
+        .order-left, 
+        .order-right {
+            width: 50%;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+            border: 1px solid #e9d5ff;
+        }
+
+        .order-left p,
+        .order-right p {
+            margin: 10px 0;
+            color: #4b5563;
+            font-size: 1rem;
+        }
+
+        .order-left strong,
+        .order-right strong {
+            color: #1f2937;
+        }
+
+        /* Mobile responsive */
+        @media(max-width: 768px){
+            .order-info{
+                flex-direction: column;
+            }
+            .order-left, 
+            .order-right {
+                width: 100%;
+            }
+        }
+
+        .order-info p {
+            margin: 10px 0;
+            color: #4b5563;
+            font-size: 1rem;
+        }
+
+        .order-info strong {
+            color: #1f2937;
+        }
+
+        .ordered-items-section {
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.15);
+        }
+
+        .ordered-items-section h4 {
+            font-weight: 700;
+            color: #6d28d9;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ordered-items-section h4::before {
+            content: '🛍️';
+            font-size: 1.8rem;
+        }
+
+        .items-table-wrapper {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.1);
+            border: 1px solid #e9d5ff;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+
+        .table thead {
+            background: linear-gradient(135deg, #ab88fdff 0%, #a78bfa 100%);
+        }
+
+        .table thead th {
+            color: white;
+            padding: 18px 20px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .table tbody tr:hover {
+            background: #faf5ff;
+            transform: translateX(5px);
+        }
+
+        .table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .table tbody td {
+            padding: 18px 20px;
+            color: #374151;
+            font-size: 1rem;
+            border: none;
+        }
+
+        .table tbody td:first-child {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .table tbody td:nth-child(2),
+        .table tbody td:nth-child(4) {
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .table tbody td:nth-child(3) {
+            background: #f3e8ff;
+            color: #7c3aed;
+            font-weight: 700;
+            text-align: center;
+            border-radius: 6px;
+            min-width: 60px;
+        }
+        
+        .receipt-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+        }
+        .receipt-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* Invoice button */
+        .btn-invoice {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #10b981;
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .btn-invoice:hover {
+            background: #059669;
+        }
+
+        /* Tooltip */
+        .tooltip-btn .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #111827;
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+
+        .tooltip-btn:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        /* FIXED: Truck moves LEFT to RIGHT (forward) */
+        @keyframes moveTruckForward {
+            0% {
+                left: -250px;
+            }
+            100% {
+                left: calc(100% + 50px);
+            }
+        }
+
+        @keyframes spinWheel {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes puff {
+            0% {
+                transform: translate(0, 0) scale(0.8);
+                opacity: 0.6;
+            }
+            100% {
+                transform: translate(-25px, -20px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .order-header h1 {
+                font-size: 2rem;
+            }
+            
+            .truck-container {
+                height: 120px;
+            }
+            
+            .receipt-card {
+                padding: 20px;
+            }
+        }
+        @media (max-width: 600px) {
+            .receipt-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Order Placed Header -->
+    <div class="order-header">
+        <h1>
+            <div class="checkmark"></div>
+            Order Placed Successfully!
+        </h1>
+        <p>Your package is on its way</p>
+    </div>
+
+    <!-- Simple Truck Animation -->
+    <div class="truck-container">
+        <div class="road"></div>
+        
+        <div class="truck">
+            <!-- TRAILER (Back of truck) - comes first in HTML -->
+            <div class="trailer">
+                <div class="package"></div>
+                <div class="wheel wheel-back1"></div>
+                <div class="wheel wheel-back2"></div>
+            </div>
+            
+            <!-- CAB (Front of truck) - comes second so it's in front -->
+            <div class="cab">
+                <div class="smoke"></div>
+                <div class="wheel wheel-front"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Card -->
+    <div class="receipt-card">
+        <div class="receipt-header">
+            <h2>📋 Order Details</h2>
+
+                <a href="{% url 'download_invoice' order.order_number %}"
+                class="btn btn-invoice tooltip-btn">
+                    <i class="fa fa-download"></i>
+                    <span class="btn-text">Invoice</span>
+                    <span class="tooltip-text">Download Invoice</span>
+                </a>
+        </div>
+
+
+        <div class="order-info">
+    
+            <!-- LEFT SIDE — Order Details -->
+            <div class="order-left">
+                <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+                <p><strong>Transaction ID:</strong> {{ payment.payment_id }}</p>
+                <p><strong>Payment Method:</strong> {{ payment.payment_method }}</p>
+                {% if order.order_note %}
+                <p><strong>Order Note:</strong> {{ order.order_note }}</p>
+                {% endif %}
+            </div>
+
+            <!-- RIGHT SIDE — Totals -->
+            <div class="order-right">
+                <p><strong>Total Items Ordered:</strong> {{ order_count }}</p>
+                <p><strong>Subtotal:</strong> ${{ order.total }}</p>
+                <p><strong>Tax:</strong> ${{ order.tax }}</p>
+                <p><strong>Order Total:</strong> ${{ order.order_total }}</p>
+            </div>
+
+        </div>
+
+        <!-- ORDERED ITEMS SECTION -->
+        <div class="ordered-items-section">
+            <h4>Ordered Items</h4>
+
+            <div class="items-table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in ordered_items %}
+                        <tr>
+                            <td>{{ item.product.product_name }}</td>
+                            <td>${{ item.product_price }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ item.subtotal }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <p style="color: #2a4e96ff; text-align: center; margin-top: 30px;">
+            <strong>Thank you for your purchase! You will receive a confirmation email shortly.</strong>
+        </p>
+        <!-- Button -->
+        <p style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'home' %}" 
+            style="
+                background-color: #2a4e96ff;
+                color: #ffffff;
+                text-decoration: none;
+                padding: 12px 25px;
+                border-radius: 5px;
+                font-weight: bold;
+                display: inline-block;
+                font-family: Arial, sans-serif;
+            ">
+                Go to Home Page
+            </a>
+        </p>
+    </div>
+</body>
+</html> {% endcomment %}

@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+/* ---- Checkout page only styling ---- */
+.checkout-container {
+    width: 95%;
+    max-width: 1200px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.checkout-layout {
+    display: flex;
+    gap: 25px;
+}
+
+/* Left - Address form */
+.checkout-left {
+    flex: 0 0 60%;
+}
+
+/* Right - Cart + Summary */
+.checkout-right {
+    flex: 0 0 40%;
+}
+
+/* Form styling */
+.checkout-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.checkout-col-6 { flex: 0 0 48%; }
+.checkout-col-12 { flex: 0 0 100%; }
+
+.checkout-container input,
+.checkout-container textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 5px;
+    font-size: 15px;
+}
+.checkout-container textarea {
+    height: 80px;
+    resize: vertical;
+}
+
+.checkout-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #444;
+}
+
+.checkout-btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    border: none;
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s ease;
+}
+
+.checkout-btn:hover {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+.checkout-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+/* Cart & Summary Box */
+.cart-items-box,
+.summary-box {
+    background: #fafafa;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+/* Cart item design */
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+.cart-item:last-child { border: none; }
+
+.cart-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.cart-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+.cart-item-name { font-weight: 600; }
+.cart-item-qty { color: #555; font-size: 13px; }
+.cart-item-price { font-weight: 600; color:#0000AE;}
+
+/* Summary */
+.summary-box {
+    background: #ffffff;
+}
+.summary-box h3 {
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 15px;
+}
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    font-size: 15px;
+    color: #444;
+}
+.summary-total {
+    font-size: 18px;
+    font-weight: 700;
+    border-top: 2px dashed #ddd;
+    padding-top: 10px;
+    margin-top: 12px;
+}
+/* ================= SAVED ADDRESS DROPDOWN ================= */
+
+.saved-address-box {
+    position: relative;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+.saved-address-box::after {
+    content: "OR ENTER A NEW ADDRESS";
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 12px;
+    color: #6b7280;
+    letter-spacing: 0.05em;
+}
+.checkout-container input:focus,
+.checkout-container textarea:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+    transition: all 0.15s ease;
+}
+.saved-address-box label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.saved-address-box select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 15px;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.saved-address-box select:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+</style>
+
+
+
+<div class="checkout-container">
+    <h2>BlazeKart - Checkout</h2><br>
+
+    <form method="POST" action="{% url 'checkout' %}">
+        {% csrf_token %}
+
+        <div class="checkout-layout">
+         <!-- LEFT SIDE -->
+            <div class="checkout-left">
+
+                {% if addresses %}
+                <div class="checkout-col-12">
+                    <div class="saved-address-box">
+                        <label>Choose Saved Address</label>
+
+                        <select id="savedAddressSelect">
+                            <option value="">-- Select an address --</option>
+
+                            {% for addr in addresses %}
+                            <option 
+                                value="{{ addr.id }}"
+                                data-first-name="{{ addr.first_name }}"
+                                data-last-name="{{ addr.last_name }}"
+                                data-email="{{ email }}"
+                                data-phone="{{ addr.phone }}"
+                                data-line1="{{ addr.address_line_1 }}"
+                                data-line2="{{ addr.address_line_2 }}"
+                                data-city="{{ addr.city }}"
+                                data-state="{{ addr.state }}"
+                                data-country="{{ addr.country }}"
+                                data-pincode="{{ addr.pincode }}"
+                            >
+                                {{ addr.address_line_1 }}, {{ addr.city }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                {% endif %}
+          
+
+                <div class="checkout-row">
+
+                    <div class="checkout-col-6">
+                        <label class="checkout-label">First Name</label>
+                        <input type="text" name="first_name" id="first_name" required>
+                    </div>
+
+                    <div class="checkout-col-6">
+                        <label class="checkout-label">Last Name</label>
+                        <input type="text" name="last_name" id="last_name" required>
+                    </div>
+
+                    <div class="checkout-col-6">
+                        <label class="checkout-label">Email</label>
+                        <input type="email" name="email" id="email" required>
+                    </div>
+
+                    <div class="checkout-col-6">
+                        <label class="checkout-label">Phone</label>
+                        <input type="text" name="phone" id="phone" required>
+                    </div>
+
+                    <div class="checkout-col-12">
+                        <label class="checkout-label">Address Line 1</label>
+                        <input type="text" name="address_line_1" id="address_line_1" required>
+                    </div>
+
+                    <div class="checkout-col-12">
+                        <label class="checkout-label">Address Line 2</label>
+                        <input type="text" name="address_line_2" id="address_line_2" > 
+                    </div>
+
+                    <div class="checkout-col-6">
+                        <label class="checkout-label">City</label>
+                        <input type="text" name="city" id="city" required>
+                    </div>
+
+                    <div class="checkout-col-6">
+                        <label class="checkout-label">State/Province</label>
+                        <input type="text" name="state" id="state" required>
+                    </div>
+
+                    <div class="checkout-col-6">
+                        <label class="checkout-label">Country</label>
+                        <input type="text" name="country" id="country" required>
+                    </div>
+
+                    <div class="checkout-col-6">
+                        <label class="checkout-label">PIN/Postal Code</label>
+                        <input type="text" name="pincode" id="pincode" required>
+                    </div>
+
+                    <div class="checkout-col-12">
+                        <label class="checkout-label">Order Note</label>
+                        <textarea name="order_note" placeholder="Optional..."></textarea>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT SIDE -->
+            <div class="checkout-right">
+
+                <!-- Cart Items -->
+                <div class="cart-items-box">
+                    <h3>Your Cart Items</h3>
+
+                    {% for item in cart_items %}
+                    <div class="cart-item">
+                        <div class="cart-item-left">
+                            <img src="{{ item.product.images.url }}" alt="{{ item.product.product_name }}">
+
+                            <div>
+                                <div class="cart-item-name">{{ item.product.product_name }}</div>
+
+                                {% for var in item.variations.all %}
+                                <div class="cart-item-qty">
+                                    {{ var.variation_category }}: {{ var.variation_value }}
+                                </div>
+                                {% endfor %}
+
+                                <div class="cart-item-qty">Qty: {{ item.quantity }}</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="cart-item-price">Unit Price: ${{ item.product.price }}</div>
+                            <div class="cart-item-price">Subtotal: ${{ item.subtotal }}</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p>No items in cart.</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Summary -->
+                <div class="summary-box">
+                    <h3>Order Summary</h3>
+
+                    <div class="summary-line">
+                        <span>Subtotal:</span>
+                        <span>${{ total }}</span>
+                    </div>
+
+                    <div class="summary-line">
+                        <span>Tax:</span>
+                        <span>${{ tax }}</span>
+                    </div>
+
+                    <div class="summary-line summary-total">
+                        <span>Total:</span>
+                        <span>${{ final_total }}</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="checkout-btn" type="submit">Proceed to Payment</button>
+    </form>
+</div>
+
+<script>
+document.getElementById('savedAddressSelect')?.addEventListener('change', function () {
+    const selected = this.options[this.selectedIndex];
+    if (!selected.value) return;
+
+    document.getElementById('first_name').value = selected.dataset.firstName || '';
+    document.getElementById('last_name').value = selected.dataset.lastName || '';
+    document.getElementById('email').value = selected.dataset.email || '';
+    document.getElementById('phone').value = selected.dataset.phone || '';
+
+    document.getElementById('address_line_1').value = selected.dataset.line1 || '';
+    document.getElementById('address_line_2').value = selected.dataset.line2 || '';
+    document.getElementById('city').value = selected.dataset.city || '';
+    document.getElementById('state').value = selected.dataset.state || '';
+    document.getElementById('country').value = selected.dataset.country || '';
+    document.getElementById('pincode').value = selected.dataset.pincode || '';
+});
+</script>
+
+{% endblock %}

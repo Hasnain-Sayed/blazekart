@@ -1,0 +1,385 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% block title %}Change Shipping Address{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ================= CHANGE ADDRESS PAGE ================= */
+
+.change-address-wrapper {
+  background:#fbfcfe;
+  padding: 40px 0;
+  min-height: calc(100vh - 180px);
+}
+
+.change-address-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.page-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #788493ff;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.change-address-card {
+  background: white;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  border: 1px solid #eef2f7;
+}
+
+.card-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 3px solid #f3f5f7ff;
+}
+
+.card-header h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.card-subtitle strong {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.card-subtitle small {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+/* Address cards */
+.addresses-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* Grid layout for 4+ addresses */
+.addresses-container.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.address-card {
+  position: relative;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.address-card:hover {
+  border-color: #4338ca;
+  background: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1);
+}
+
+.address-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.address-card input[type="radio"]:checked + .card-content {
+  border-left: 4px solid #4338ca;
+  padding-left: 16px;
+}
+
+.address-card input[type="radio"]:checked + .card-content::after {
+  content: '✓';
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #4338ca;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.card-content {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.address-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.address-label::before {
+  content: '📍';
+  font-size: 1.1rem;
+}
+
+.address-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.address-name {
+  font-weight: 600;
+  color: #334155;
+  font-size: 0.95rem;
+}
+
+.address-line {
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 2px dashed #cbd5e1;
+}
+
+.empty-state p {
+  color: #64748b;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Add address section */
+.add-address-section {
+  margin-bottom: 24px;
+  padding-top: 16px;
+  border-top: 2px solid #f1f5f9;
+}
+
+.add-address-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #ffffff;
+  border: 2px solid #4338ca;
+  color: #3b82f6;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.add-address-btn:hover {
+  background: #5044d2;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+/* Action buttons */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 2px solid #f1f5f9;
+}
+
+.btn-update {
+  flex: 1;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #5044d2 0%, #3e2fdf 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-update:hover {
+  background: linear-gradient(135deg, ##4338ca 0%, #4235d3 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+}
+
+.btn-cancel {
+  padding: 14px 32px;
+  background: #ffffff;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-cancel:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .change-address-wrapper {
+    padding: 20px 0;
+  }
+
+  .change-address-container {
+    padding: 0 16px;
+  }
+
+  .page-title {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }
+
+  .change-address-card {
+    padding: 20px;
+  }
+
+  .card-header h3 {
+    font-size: 1.2rem;
+  }
+
+  .address-card {
+    padding: 16px;
+  }
+
+  /* Stack grid to single column on mobile */
+  .addresses-container.grid-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .btn-update,
+  .btn-cancel {
+    width: 100%;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="change-address-wrapper">
+<div class="page-title">Change Shipping Address</div>
+  <div class="change-address-container">
+    
+
+    <div class="change-address-card">
+      <div class="card-header">
+        <h3>
+          <i class="fas fa-map-marker-alt"></i>
+          Select Delivery Address
+        </h3>
+        <p class="card-subtitle">
+          Select one of your saved addresses below. This will update the <strong>shipping address only</strong> for this order.
+          <small>(Billing address will remain unchanged.)</small>
+        </p>
+    </div>
+      
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <div class="addresses-container {% if addresses|length > 3 %}grid-layout{% endif %}">
+          {% for addr in addresses %}
+          <label class="address-card">
+            <input type="radio" name="address_id" value="{{ addr.id }}" required>
+            <div class="card-content">
+              <div class="address-label">{{ addr.label }}</div>
+              <div class="address-details">
+                <div class="address-name">{{ addr.first_name }} {{ addr.last_name }}</div>
+                <div class="address-line">
+                  {{ addr.address_line_1 }}{% if addr.address_line_2 %}, {{ addr.address_line_2 }}{% endif %}
+                </div>
+                <div class="address-line">
+                  {{ addr.city }} - {{ addr.pincode }}
+                </div>
+                <div class="address-line">
+                  {{ addr.state }}, {{ addr.country }}
+                </div>
+              </div>
+            </div>
+          </label>
+          {% empty %}
+          <div class="empty-state">
+            <p>No saved addresses found.</p>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="add-address-section">
+          <a href="{% url 'profile' %}?next={{ request.path }}" class="add-address-btn">
+            <i class="fas fa-plus"></i>
+            Add New Address In Profile
+          </a>
+        </div>
+
+
+
+        <div class="action-buttons">
+          <button type="submit" class="btn-update">
+            <i class="fas fa-check"></i>
+            Update Shipping Address
+          </button>
+          <a href="{% url 'order_details' order.order_number %}" class="btn-cancel">
+            Cancel
+          </a>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+

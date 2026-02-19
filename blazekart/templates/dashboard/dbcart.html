@@ -1,0 +1,358 @@
+{% extends 'dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}My Cart - {{user.first_name}} {{user.last_name}}{% endblock %}
+
+{% block nav_cart %}active{% endblock %}
+
+{% block extra_css %}
+/* ================= CART PAGE WRAPPER ================= */
+.cart-wrapper {
+  background: #f8fafc;
+  padding: 50px 0;
+}
+
+.cart-page {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 22px 43px;
+  background: #f5f7fb;
+  border-radius: 24px;
+}
+
+/* CART + SUMMARY ROW */
+.cart-main-row {
+  display: grid;
+  grid-template-columns: 2.3fr 1fr;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+/* ================= CART BOX ================= */
+.cart-box {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 26px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.05);
+}
+
+.cart-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+/* ================= CART ROW ================= */
+.cart-row {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 0.8fr;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.cart-row:last-child {
+  border-bottom: none;
+}
+
+/* ================= PRODUCT ================= */
+.cart-product {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.cart-product img {
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.product-info strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.variant {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* ================= QTY ================= */
+.cart-qty span {
+  background: #f1f3f5;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+/* ================= PRICE ================= */
+.cart-price strong {
+  display: block;
+}
+
+.cart-price small {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+/* ================= SUMMARY ================= */
+.summary-box {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 26px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.05);
+}
+
+.summary-box h4 {
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.summary-row.total {
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding-top: 10px;
+  border-top: 1px dashed #e5e7eb;
+}
+
+/* ================= ACTION BUTTONS BELOW ================= */
+.cart-actions-row {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.cart-actions-row a {
+  min-width: 180px;
+  text-align: center;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-checkout {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.btn-checkout:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+/* Browse More - Vibrant Blue */
+.btn-browse {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-browse:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+/* Customize Cart - Light Purple */
+.btn-customize {
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  color: #4338ca;
+  border: 2px solid #c7d2fe;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+}
+
+.btn-customize:hover {
+  background: linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 100%);
+  color: #4338ca;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+.btn-remove {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  text-decoration: none;
+  letter-spacing: 0.2px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.btn-remove:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+
+/* =================== STOCK LIMIT TOAST =================== */
+#stock-toast {
+  position: fixed;
+  top: 20px;
+  right: 40%;
+  background: linear-gradient(135deg, #ff6b6b, #ff4d4f);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  font-weight: 600;
+  font-family: Arial, sans-serif;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.5s ease;
+  z-index: 9999;
+}
+
+#stock-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+{% endblock %}
+
+{% block content %}
+{% if cartitems %}
+
+<section class="cart-wrapper">
+<div class="container-fluid">
+
+<div class="cart-page">
+
+  <!-- ROW: CART + SUMMARY -->
+  <div class="cart-main-row">
+
+    <!-- CART BOX -->
+    <div class="cart-box">
+      <h3 class="cart-title">My Cart <i class="fas fa-shopping-cart"></i></h3>
+
+      {% for cart_item in cartitems %}
+      <div class="cart-row">
+        <div class="cart-product">
+          <img src="{{ cart_item.product.images.url }}" alt="">
+          <div class="product-info">
+            <strong>{{ cart_item.product.product_name }}</strong>
+            {% for var in cart_item.variations.all %}
+              <div class="variant">
+                {{ var.variation_category }} : {{ var.variation_value }}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="cart-qty">
+          Qty <span>{{ cart_item.quantity }}</span>
+        </div>
+
+        <div class="cart-price">
+          <strong>${{ cart_item.subtotal }}</strong>
+          <small>${{ cart_item.product.price }} each</small>
+        </div>
+
+        <div class="cart-actions">
+          <a href="{% url 'remove_dbcart' cart_item.product.id cart_item.id %}" class="btn-remove">
+            Remove
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- SUMMARY BOX -->
+    <div class="summary-box">
+      <h4>Order Summary</h4>
+
+      <div class="summary-row">
+        <span>Total Price:</span>
+        <span>${{ total }}</span>
+      </div>
+
+      <div class="summary-row">
+        <span>Tax:</span>
+        <span>${{tax}}</span>
+      </div>
+
+      <div class="summary-row">
+        <span>Shipping:</span>
+        <span>Free</span>
+      </div>
+      <hr>
+
+      <div class="summary-row total">
+        <span>Final Total</span>
+        <span>${{ final_total }}</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BUTTON ROW -->
+  <div class="cart-actions-row">
+    <a href="{% url 'cart' %}" class="btn-customize">Customize Cart</a>
+    <a href="{% url 'checkout' %}" class="btn-checkout">Proceed to Checkout</a>
+    <a href="{% url 'store' %}" class="btn-browse">Browse More</a>
+  </div>
+
+</div>
+
+</div>
+</section>
+
+{% endif %}
+
+{% if stock_limit_reached %}
+<div id="stock-toast">
+  ⚠️ Stock limit reached! Quantity adjusted to available stock.
+</div>
+{% endif %}
+
+{% if not cartitems %}
+<div style="height: calc(92vh - 120px);overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+    <img src="{% static 'images/Emptycart.png' %}" 
+         alt="Empty Cart"
+         style="width: 200px; margin-bottom: 20px;">
+
+    <h2>Your cart is empty</h2>
+
+    <a href="{% url 'store' %}" 
+       style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #4338ca; color: white; text-decoration: none; border-radius: 5px; transition: 0.4s;"
+       onmouseover="this.style.backgroundColor='#4c44a3'"
+       onmouseout="this.style.backgroundColor='#4338ca'">
+        Let's add something
+    </a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if stock_limit_reached %}
+<script>
+  const toast = document.getElementById('stock-toast');
+  toast.classList.add('show');
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 500);
+  }, 3000);
+</script>
+{% endif %}
+{% endblock %}

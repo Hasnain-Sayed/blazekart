@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- ========================= SECTION CONTENT ========================= -->
+<section class="section-conten padding-y" style="min-height:84vh">
+
+
+<!-- ============================ COMPONENT LOGIN   ================================= -->
+	<div class="card mx-auto" style="max-width: 380px; margin-top:100px;">
+      <div class="card-body">
+      <h4 class="card-title mb-4">Sign in</h4>
+      {% if messages %}
+			  {% for message in messages %}
+        {% if message.tags == 'success' and redirect_home %}
+        <script>
+          setTimeout(() => {
+          window.location.href = "{% url 'home' %}";
+          }, 2250); // 2.25 seconds delay
+        </script>
+        {% endif %}
+			  {% endfor %}
+			{% endif %} 
+      <form method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
+          <div class="form-group">
+          <label>Enter Email:</label>
+			 <input type="email" name="email" class="form-control" placeholder="Email Address" >
+          </div> <!-- form-group// -->
+
+          <div class="form-group">
+              <label>Enter Password:</label>
+              <div class="input-group">
+                <input type="password" name ="password" id="password" class="form-control" placeholder="Password">
+
+                <div class="input-group-append">
+                  <span class="input-group-text eye-toggle" 
+                        id="togglePwd" 
+                        style="cursor:pointer;">
+                    <i class="bi bi-eye"></i>
+                  </span>
+                </div>
+              </div>
+            <style>
+              .eye-toggle {
+                background-color: #f0f0f0dc;   /* default (hidden) */
+                color: #000000ff;
+                transition: background-color 0.2s, color 0.2s;
+              }
+
+              .eye-toggle.active {
+                background-color: #4fa4ffff;  /* Bootstrap primary */
+                color: #ffffffff;
+              }
+
+              .eye-toggle:hover {
+                background-color: #dfdfdfff;
+              }
+              .eye-toggle.active:hover {
+                background-color: #3793f6ff;
+              }
+              .btn-login {
+                background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+                color: #ffffff;
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+              }
+
+              .btn-login:hover {
+                background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+                color: #ffffff;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+              }
+
+            </style>
+          </div> <!-- form-group// -->
+          
+          <div class="form-group">
+          	<a href="{% url 'forgotpassword' %}" class="float-right">Forgot password?</a> 
+           
+          </div> <!-- form-group form-check .// -->
+          <div class="form-group">
+              <button type="submit" class="btn btn-block btn-login"> Login  </button>
+          </div> <!-- form-group// -->    
+          
+      </form>
+      </div> <!-- card-body.// -->
+    </div> <!-- card .// -->
+
+     <p class="text-center mt-4">Don't have account? <a href="{% url 'register' %}">Sign up</a></p>
+     <br><br>
+<!-- ============================ COMPONENT LOGIN  END.// ================================= -->
+
+
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->
+<script>
+  setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(el => el.style.display = 'none');
+  }, 3000);  // hides after 2.5 seconds
+</script>
+
+
+<script>
+const pwd = document.getElementById("password");
+const toggle = document.getElementById("togglePwd");
+
+toggle.onclick = () => {
+  const isHidden = pwd.type === "password";
+  pwd.type = isHidden ? "text" : "password";
+  toggle.classList.toggle("active", isHidden);
+
+  toggle.innerHTML = isHidden
+    ? '<i class="bi bi-eye-slash"></i>'
+    : '<i class="bi bi-eye"></i>';
+};
+</script>
+
+
+
+{% endblock  %}

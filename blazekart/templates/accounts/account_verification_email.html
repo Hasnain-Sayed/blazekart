@@ -1,0 +1,93 @@
+{% autoescape off %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Welcome to BlazeKart! Verify Your Account</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color:#f5f5f5; margin:0; padding:0;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="20" cellspacing="0" border="0" style="background-color:#ffffff; border-radius:8px;">
+                    <tr>
+                        <td>
+                            <p style="font-size:16px;">Hi {{ user.first_name }},</p>
+
+                            <p style="font-size:16px;">
+                                Welcome to <strong>BlazeKart</strong>! We're thrilled to have you onboard. <br>
+                                To start enjoying our services and special offers, please verify your account by clicking the button below.
+                            </p>
+
+                            <!-- Verification Button -->
+                            <p style="text-align:center; margin:30px 0;">
+                                <a href="http://{{ domain }}{% url 'activate' uid=uid token=token %}" 
+                                   style="background-color:#007bff; color:#ffffff; text-decoration:none; padding:12px 25px; border-radius:5px; font-weight:bold; display:inline-block;">
+                                    Verify My Account
+                                </a>
+                            </p>
+
+                            <p style="font-size:14px; color:#555;">
+                                If the button doesn't work, Hold the button above, copy the link, and paste it into your browser to verify your account.
+                            </p>
+
+                            <p style="font-size:14px; color:#555;">
+                                If you didn't create this account, you can safely ignore this email.
+                            </p>
+
+                            <p style="font-size:16px; margin-top:20px;">
+                                Thanks,<br>
+                                <strong>The BlazeKart Team</strong>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+{% endautoescape %}
+
+
+
+
+
+{% comment %} {% autoescape off %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Verify Your Account</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color:#f5f5f5; margin:0; padding:0;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="20" cellspacing="0" border="0" style="background-color:#ffffff; border-radius:8px;">
+                    <tr>
+                        <td>
+                            <p style="font-size:16px;">Hi {{ user.first_name }},</p>
+                            <p style="font-size:16px;">Please click the button below to verify your account:</p>
+
+                            <!-- Verification Button -->
+                            <p style="text-align:center; margin:30px 0;">
+                                <a href="http://{{ domain }}{% url 'activate' uid=uid token=token %}" 
+                                   style="background-color:#007bff; color:#ffffff; text-decoration:none; padding:12px 25px; border-radius:5px; font-weight:bold; display:inline-block;">
+                                    Verify Account
+                                </a>
+                            </p>
+
+                            <p style="font-size:14px; color:#555;">If the button doesn't work, copy and paste the following link into your browser:</p>
+                            <p style="font-size:14px; word-break:break-all;">
+                                http://{{ domain }}{% url 'activate' uid=uid token=token %}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+{% endautoescape %} {% endcomment %}

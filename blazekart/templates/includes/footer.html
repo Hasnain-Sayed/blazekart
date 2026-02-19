@@ -1,0 +1,68 @@
+{% load static %}
+<!-- ========================= FOOTER ========================= -->
+<footer class="main-footer">
+    <div class="container">
+
+        <!-- TOP FOOTER -->
+        <div class="footer-top row">
+
+            <!-- BRAND -->
+            <div class="col-md-6 footer-brand">
+                <h3>BlazeKart</h3>
+                <p>
+                    Fuel Your Lifestyle with curated products that blend style,
+                    quality, and everyday comfort — built to move with your pace.
+                </p>
+
+                <!-- SOCIAL ICONS -->
+                <div class="footer-socials">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                </div>
+            </div>
+
+            <!-- QUICK LINKS -->
+            <div class="col-md-3 footer-links">
+                <h5>Quick Links</h5>
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'store' %}">Shop</a></li>
+                    <li><a href="{% if user.is_authenticated %}# {%else%}  {% url 'plz_login' %}  {% endif %}">Privacy Policy</a></li>
+                    <li><a href="{% if user.is_authenticated %}# {%else%}  {% url 'plz_login' %}  {% endif %}">Terms & Conditions</a></li>
+                    <li><a href="{% if user.is_authenticated %}{% url 'help_support' %}{%else%}  {% url 'plz_login' %}  {% endif %}">Help & Support</a></li>
+                </ul>
+            </div>
+
+            <!-- CONTACT -->
+            <div class="col-md-3 footer-contact">
+                <h5>Contact</h5>
+                <p><i class="fas fa-envelope"></i> blazekart.help@gmail.com</p>
+                <p><i class="fas fa-phone"></i> +91 97680 XXXXX</p>
+                <p><i class="fas fa-map-marker-alt"></i> Mumbai, India</p>
+            </div>
+
+        </div>
+
+        <!-- DIVIDER -->
+        <div class="footer-divider"></div>
+
+        <!-- BOTTOM FOOTER -->
+        <div class="footer-bottom row align-items-center">
+
+            <div class="col-md-6 text-center text-md-left">
+                <p>© 2026 BlazeKart. All rights reserved.</p>
+            </div>
+
+            <div class="col-md-6 text-center text-md-right footer-payments">
+                <i class="fab fa-cc-visa"></i>
+                <i class="fab fa-cc-paypal"></i>
+                <i class="fab fa-cc-mastercard"></i>
+                <i class="fab fa-cc-amex"></i>
+            </div>
+
+        </div>
+
+    </div>
+</footer>
+<!-- ========================= FOOTER END ========================= -->

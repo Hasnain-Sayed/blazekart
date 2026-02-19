@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- ========================= SECTION CONTENT ========================= -->
+<section class="section-content padding-y">
+
+<!-- ============================ COMPONENT REGISTER   ================================= -->
+	<div class="card mx-auto" style="max-width:520px; margin-top:40px;">
+      <article class="card-body">
+		<header class="mb-4"><h4 class="card-title">Sign up</h4></header>
+		{% if messages %}
+			{% for message in messages %}
+			{% endfor %}
+			{% endif %}
+		<form method="POST" action="{% url 'register' %}">
+		{% csrf_token %}
+				<div class="form-row">
+					<div class="col form-group">
+						<label>First name</label>
+						{{form.first_name}}
+					</div> <!-- form-group end.// -->
+					<div class="col form-group">
+						<label>Last name</label>
+					  	{{form.last_name}}
+					</div> <!-- form-group end.// -->
+				</div> <!-- form-row end.// -->
+				<div class="form-row">
+					<div class="form-group col-md-6">
+					<label>Email</label>
+					{{form.email}}
+					<small class="form-text text-muted">We'll never share your email with anyone.</small>
+					{% if form.email.errors %}
+						<div class="text-danger small">
+							{% for error in form.email.errors %}
+								{{ error }}<br>
+							{% endfor %}
+						</div>
+					{% endif %}
+					</div>
+				
+				
+					<div class="form-group col-md-6">
+					<label>Phone Number</label>
+					{{form.phone_no}}
+					{% if form.phone_no.errors %}
+						<small class="text-danger">
+							{% for error in form.phone_no.errors %}
+								{{ error }}<br>
+							{% endfor %}
+						</small>
+					{% endif %}
+					</div>
+				</div> <!-- form-group end.// -->
+
+
+				<div class="form-row">
+					<div class="col-md-6">
+						<label>Create password</label>
+						{{ form.password }}
+					</div>
+
+					<div class="col-md-6">
+						<label>Repeat password</label>
+						{{ form.confirm_password }}
+					</div>
+				</div>
+
+				<!-- Show non-field errors -->
+					{% if form.non_field_errors %}
+						<div class="text-danger small mt-1 text-center px-3">
+							{{ form.non_field_errors.0 }}
+						</div>
+					{% endif %}
+
+				<div class="text-center mt-0 mb-0">
+					<span class="pill-toggle" style="padding: 2px 8px;">
+					<i class="bi bi-eye"></i>Show passwords
+					</span>
+				</div>
+
+				{% if errors %}
+					<div class="alert p-2 mt-0 mb-0">
+						<strong>Password Must contain:</strong>
+						{% if errors %}
+							<div class="alert alert-danger small">
+								{{ errors|join:", " }}
+							</div>
+						{% endif %}
+						</ul>
+					</div>
+				{% endif %}
+
+			    <div class="form-group mt-4">
+			        <button type="submit" class="btn btn-block btn-register"> Register  </button>
+			    </div> <!-- form-group// -->      
+
+
+				
+			</form>
+		</article><!-- card-body.// -->
+    </div> <!-- card .// -->
+    <p class="text-center mt-4">Have an account? <a href="{% url 'login' %}">Log In</a></p>
+    <br><br>
+
+<!-- ============================ COMPONENT REGISTER  END.// ================================= -->
+<style>
+.password-row {
+  display: flex;
+  align-items: center;
+}
+
+.password-row input {
+  flex: 1;
+}
+/* Pill toggle */
+.pill-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  margin: 20px 0 0 0;              /* 👈 top & bottom spacing */
+  padding: 6px 16px;              /* 👈 slimmer capsule */
+
+  border-radius: 999px;           /* cylinder */
+  background-color: #f1f3f5;
+  border: 1px solid #dee2e6;
+
+  cursor: pointer;
+  user-select: none;
+
+  color: #495057;
+  font-size: 15px;                /* 👈 bigger initial text */
+  font-weight: 500;
+
+  transition: all 0.2s ease;
+}
+
+/* Icon size */
+.pill-toggle i {
+  font-size: 16px;
+}
+
+/* Hover */
+.pill-toggle:hover {
+  background-color: #e9ecef;
+}
+
+/* Active (password visible) */
+.pill-toggle.active {
+  background-color: #6366f1;
+  color: #fff;
+  border-color: #5a5ceb;
+}
+.pill-toggle.active:hover {
+  background-color: #5247d0;
+}
+
+.btn-register {
+background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+color: #ffffff;
+box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.btn-register:hover {
+background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+color: #ffffff;
+transform: translateY(-2px);
+box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+</style>
+
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->
+<script>
+const toggle = document.querySelector(".pill-toggle");
+const fields = document.querySelectorAll(".password-field");
+
+toggle.addEventListener("click", () => {
+  const isHidden = fields[0].type === "password";
+
+  fields.forEach(f => {
+    f.type = isHidden ? "text" : "password";
+  });
+
+  toggle.classList.toggle("active", isHidden);
+  toggle.innerHTML = isHidden
+    ? '<i class="bi bi-eye-slash"></i><span>Hide Passwords</span>'
+    : '<i class="bi bi-eye"></i><span>Show Passwords</span>';
+});
+</script>
+
+
+{% endblock  %}

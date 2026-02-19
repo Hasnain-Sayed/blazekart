@@ -1,0 +1,1363 @@
+{% extends 'dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}My Profile - {{user.first_name}} {{user.last_name}}{% endblock %}
+
+{% block nav_profile %}active{% endblock %}
+
+{% block extra_css %}
+/* ===================== PROFILE PAGE STYLES ===================== */
+
+.profile-wrapper {
+  background: #f8fafc;
+  padding: 30px 0;
+  min-height: calc(100vh - 180px);
+}
+
+.profile-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===================== PROFILE HEADER ===================== */
+.profile-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 40px;
+  margin-bottom: 30px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+   pointer-events: none; 
+}
+
+.profile-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 48px;
+}
+.profile-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  max-width: 520px;
+}
+/* Profile Picture Upload */
+.profile-pic-section {
+  position: relative;
+}
+
+.profile-pic-wrapper {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.profile-pic-wrapper:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.profile-pic-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-pic-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.profile-pic-wrapper:hover .profile-pic-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.profile-pic-overlay i {
+  font-size: 2rem;
+  color: white;
+}
+
+#profile-pic-input {
+  display: none;
+}
+.profile-info {
+  max-width: 320px;
+}
+
+.profile-info h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: white;
+}
+
+.profile-info p {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin: 4px 0;
+}
+
+.profile-right {
+  display: flex;
+  align-items: center;
+}
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  gap: 24px 40px;
+  text-align: center;
+}
+.stat-item {
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.stat-item {
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: block;
+}
+.stat-item:hover{
+  background: rgba(255, 255, 255, 0.32);
+  transform: translateY(-1px);
+}
+.stat-number {
+  display: block;
+  font-size: 22px;
+  font-weight: 700;
+}
+.stat-label {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+/* ===================== GRID LAYOUT ===================== */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* ===================== CARD STYLES ===================== */
+.profile-card {
+  background: white;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.card-header h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-edit {
+  background: #3b82f6;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-edit:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.btn-save {
+  background: #10b981;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-save:hover {
+  background: #059669;
+}
+
+.btn-cancel {
+  background: #6b7280;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn-cancel:hover {
+  background: #4b5563;
+}
+
+/* ===================== FORM STYLES ===================== */
+.info-group {
+  margin-bottom: 20px;
+}
+
+.info-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.info-value {
+  font-size: 1rem;
+  color: #0f172a;
+  font-weight: 500;
+  padding: 12px 0;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-input:disabled {
+  background: #f9fafb;
+  cursor: not-allowed;
+}
+
+select.form-input {
+  cursor: pointer;
+}
+
+select.form-input:disabled {
+  cursor: not-allowed;
+}
+
+/* ===================== ADDRESS SECTION ===================== */
+.addresses-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.address-card {
+  background: #f8fafc;
+  border: 2px solid #e5e7eb;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  border-radius: 10px;
+  padding: 20px;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.address-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+.address-card.default {
+  border-color: #10b981;
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+  order: -1;
+}
+
+.default-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #10b981;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.address-content h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.address-content p {
+  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 4px;
+}
+.address-content p strong {
+  font-size: 1.05rem;
+  color: #0f172a;
+}
+
+.address-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-small {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.btn-secondary:hover {
+  background: #d1d5db;
+  color: #374151;
+}
+
+.btn-add-address {
+  width: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 0.90rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.btn-add-address:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* ===================== FULL WIDTH CARDS ===================== */
+.full-width-card {
+  grid-column: 1 / -1;
+}
+
+/* ===================== SECURITY SECTION ===================== */
+.security-items {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.security-item {
+  background: #f8fafc;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.security-info h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.security-info p {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 1024px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .security-items {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .profile-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+    .profile-right {
+    width: 100%;
+    justify-content: center;
+    margin-top: 24px;
+  }
+  
+  .profile-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .profile-container {
+    padding: 0 16px;
+  }
+  
+}
+@media (max-width: 768px) {
+  .addresses-list {
+    grid-template-columns: 1fr;
+  }
+}
+/* ===================== MODAL STYLES ===================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.modal-header h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.form-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  justify-content: flex-end;
+}
+
+.profile-bio {
+  margin-top: 6px;
+
+  font-size: 0.9rem;
+  line-height: 1.6;
+
+  color: rgba(255, 255, 255, 0.85);
+
+  max-width: 320px;
+    font-style: italic;
+
+}
+
+
+/* NAME */
+.profile-info h1 {
+  color:  #b3c2ffff;
+  font-weight: 700;
+text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+/* USERNAME */
+.profile-info p:nth-of-type(1) {
+  color: #bae6fd; /* soft indigo */
+}
+
+/* EMAIL */
+.profile-info p:nth-of-type(2) {
+  color: #bae6fd; /* light sky blue */
+}
+
+/* PHONE */
+.profile-info p:nth-of-type(3) {
+  color: #bbf7d0; /* soft green */
+}
+
+/* ICONS */
+.profile-info i {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+
+.profile-pic-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;   /* 🔥 THIS centers everything */
+}
+
+
+.profile-bio.muted {
+  opacity: 0.7;
+  font-style: italic;
+}
+.btn-remove-pfp {
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.btn-remove-pfp:hover {
+    text-decoration: underline;
+}
+.remove-pfp-form {
+    margin-top: 10px;
+}
+
+.remove-pfp-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 1.2rem;
+    cursor: pointer;
+    position: relative;
+    padding: 6px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.remove-pfp-btn:hover {
+    color: #fecaca;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+
+.remove-tooltip {
+    position: absolute;
+    bottom: -38px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #111827;
+    color: white;
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.remove-pfp-btn:hover .remove-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(4px);
+}
+
+
+
+{% endblock %}
+{% block content %}
+
+<div class="profile-wrapper">
+  <div class="profile-container">
+    
+    <!-- PROFILE HEADER -->
+    <div class="profile-header">
+      <div class="profile-header-content">
+    <!-- LEFT SIDE : PROFILE PIC + INFO -->
+        <div class="profile-left">
+
+          <form method="POST" enctype="multipart/form-data" id="pfp-form">
+            {% csrf_token %}
+
+            <div class="profile-pic-section">
+              <div class="profile-pic-wrapper"
+                  onclick="document.getElementById('profile-pic-input').click()">
+                <img src="{% if profile.profile_pic %}{{ profile.profile_pic.url }}{% else %}{% static 'images/avatars/default-avatar.png' %}{% endif %}"
+                    alt="Profile Picture"
+                    id="profile-pic-display">
+
+                <div class="profile-pic-overlay">
+                  <i class="fas fa-camera"></i>
+                </div>
+
+                <input
+                  type="file"
+                  id="profile-pic-input"
+                  name="profile_pic"
+                  accept="image/*"
+                  hidden
+                >
+              </div>
+
+              {% if profile.profile_pic %}
+              <form method="POST" class="remove-pfp-form">
+                {% csrf_token %}
+                <button type="submit" name="remove_pfp" class="remove-pfp-btn">
+                  <i class="fas fa-trash-alt"></i>
+                  <span class="remove-tooltip">Remove profile picture</span>
+                </button>
+              </form>
+              {% endif %}
+            </div>
+          </form>
+
+          <div class="profile-info">
+            <h1>{{ user.first_name }} {{ user.last_name }}</h1>
+            <p><i class="fas fa-user"></i> @{{ user.username }}</p>
+            <p><i class="fas fa-envelope"></i> {{ user.email }}</p>
+            <p><i class="fas fa-phone"></i> {{ user.phone_no }}</p>
+
+            {% if profile.bio %}
+              <p class="profile-bio">BIO - {{ profile.bio }} </p>
+            {% else %}
+              <p class="profile-bio muted">No bio added yet.</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE : STATS -->
+        <div class="profile-right">
+          <div class="profile-stats">
+            <div class="stat-item">
+              <span class="stat-number">{{ order_count }}</span>
+              <span class="stat-label">Orders</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ cartitems_count }}</span>
+              <span class="stat-label">Cart Items</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ wishlist_count }}</span>
+              <span class="stat-label">Wishlist</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ address_count }}</span>
+              <span class="stat-label">Addresses</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- PROFILE GRID -->
+    <div class="profile-grid">
+      
+      <!-- PERSONAL INFORMATION -->
+      <div class="profile-card">
+        <div class="card-header">
+          <h3><i class="fas fa-user-circle"></i> Personal Information</h3>
+          <button class="btn-edit" onclick="toggleEdit('personal-info')">
+            <i class="fas fa-edit"></i> Edit
+          </button>
+        </div>
+        
+        <form id="personal-info-form" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="personal_info_form" value="1">
+          <div class="info-group">
+            <label class="info-label">First Name</label>
+            <input type="text" name="first_name" class="form-input" value="{{ user.first_name }}" disabled id="first-name-input">
+          </div>
+          
+          <div class="info-group">
+            <label class="info-label">Last Name</label>
+            <input type="text" name="last_name" class="form-input" value="{{ user.last_name }}" disabled id="last-name-input">
+          </div>
+          
+          <div class="info-group">
+            <label class="info-label">Username</label>
+            <input type="text" name="username" class="form-input" value="{{ user.username }}" disabled id="username-input">
+          </div>
+          
+          <div class="info-group">
+            <label class="info-label">Date of Birth</label>
+            <input type="date" name="DOB" class="form-input" value="{{ profile.date_of_birth|date:'Y-m-d' }}" disabled id="dob-input">
+          </div>
+
+          <div class="info-group">
+            <label class="info-label">Gender</label>
+            <select name="gender" class="form-input" disabled id="gender-input">
+              <option value="">Select Gender</option>
+              <option value="male" {% if profile.gender == 'male' %}selected{% endif %}>Male</option>
+              <option value="female" {% if profile.gender == 'female' %}selected{% endif %}>Female</option>
+              <option value="other" {% if profile.gender == 'other' %}selected{% endif %}>Other</option>
+              <option value="prefer_not_to_say" {% if profile.gender == 'prefer_not_to_say' %}selected{% endif %}>Prefer not to say</option>
+            </select>
+          </div>
+          
+          <div id="personal-info-actions" style="display: none; margin-top: 20px;">
+            <button type="submit" class="btn-save">
+              <i class="fas fa-check"></i> Save Changes
+            </button>
+            <button type="button" class="btn-cancel" onclick="cancelEdit('personal-info')">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+      
+      <!-- CONTACT & BIO -->
+
+      <div class="profile-card">
+        <div class="card-header">
+          <h3><i class="fas fa-address-card"></i> Contact & Bio</h3>
+          <button class="btn-edit" onclick="toggleEdit('contact-bio')">
+            <i class="fas fa-edit"></i> Edit
+          </button>
+        </div>
+        
+        <form id="contact-bio-form" method="POST">
+        {% csrf_token %}
+         <input type="hidden" name="contact_bio_form" value="1">
+          <div class="info-group">
+            <label class="info-label">Email Address</label>
+            <input type="email" name="email" class="form-input" value="{{ user.email }}" disabled id="email-input">
+          </div>
+          
+          <div class="info-group">
+            <label class="info-label">Phone Number</label>
+            <input type="tel" name="phone_no" class="form-input" value="{{ user.phone_no }}" disabled id="phone-input">
+          </div>
+
+          <div class="info-group">
+            <label class="info-label">Bio</label>
+            <textarea
+              name="bio"
+              class="form-textarea"
+              rows="4"
+              placeholder="Tell us about yourself..."
+              disabled
+              id="bio-input"
+            >{{ profile.bio }}</textarea>
+          </div>
+          
+          <div id="contact-bio-actions" style="display: none; margin-top: 20px;">
+            <button type="submit" class="btn-save">
+              <i class="fas fa-check"></i> Save Changes
+            </button>
+            <button type="button" class="btn-cancel" onclick="cancelEdit('contact-bio')">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+      
+      <!-- ACCOUNT SETTINGS -->
+      <div class="profile-card">
+        <div class="card-header">
+          <h3><i class="fas fa-cog"></i> Account Settings</h3>
+        </div>
+        
+        <div class="info-group">
+          <label class="info-label">Member Since</label>
+          <div class="info-value">{{ user.date_joined|date:"F d, Y" }}</div>
+        </div>
+        
+        <div class="info-group">
+          <label class="info-label">Account Status</label>
+          <div class="info-value">
+            {% if user.is_active %}
+            <span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+              <i class="fas fa-check-circle"></i> Active
+            </span>
+            {% else %}
+            <span style="background: #fee2e2; color: #991b1b; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+              <i class="fas fa-check-circle"></i> Inactive
+            </span>
+            {% endif %}
+
+          </div>
+        </div>
+
+        <div class="info-group">
+          <label class="info-label">Last Login</label>
+          <div class="info-value">{{ user.last_login|default:"Never"|date:"F d, Y - g:i A" }}</div>
+        </div>
+      </div>
+
+        <!-- SECURITY SETTINGS -->
+      <div class="profile-card ">
+        <div class="card-header">
+          <h3><i class="fas fa-shield-alt"></i> Security Settings</h3>
+        </div>
+        
+        <div class="security-items">
+          <div class="security-item full-width-card">
+            <div class="security-info">
+              <h4>Password</h4>
+              <p>{% if profile.password_updated_at %}Last changed {{profile.password_updated_at|timesince}} ago
+                  {% else %} Never Changed {% endif %}
+              </p>
+            </div>
+            <button class="btn-edit" onclick="openPasswordModal()">
+              <i class="fas fa-key"></i> Change
+            </button>
+          </div>
+          
+          <div class="security-item full-width-card">
+            <div class="security-info">
+              <h4>Two-Factor Authentication</h4>
+              {% if profile.two_factor_enabled %}
+                <p style="color:#166534;font-weight:600;">✔ Enabled </p>
+              {% else %}
+                <p style="color:#991b1b;">Not enabled</p>
+              {% endif %}
+            </div>
+            
+            {% if profile.two_factor_enabled %}
+              <button class="btn-edit" disabled style="opacity:0.6;cursor:not-allowed;">
+                Enabled
+              </button>
+            {% else %}
+              <button class="btn-edit" onclick="window.location.href='{% url 'enable_2fa' %}'">
+                <i class="fas fa-mobile-alt"></i> Enable
+              </button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      
+      <!-- SAVED ADDRESSES -->
+      <div class="profile-card full-width-card">
+        <div class="card-header">
+          <h3><i class="fas fa-map-marker-alt"></i> Saved Addresses</h3>
+        </div>
+        
+        <div class="addresses-list">
+          {% if addresses %}
+            {% for address in addresses %}
+
+              <div class="address-card {% if address.is_default %} default {% endif %}"
+                  data-id="{{ address.id }}"
+                  data-first-name="{{ address.first_name }}"
+                  data-last-name="{{ address.last_name }}"
+                  data-phone="{{ address.phone }}"
+                  data-address1="{{ address.address_line_1 }}"
+                  data-address2="{{ address.address_line_2 }}"
+                  data-city="{{ address.city }}"
+                  data-state="{{ address.state }}"
+                  data-country="{{ address.country }}"
+                  data-pincode="{{ address.pincode }}"
+                  data-label="{{ address.label }}"
+                  data-default="{{ address.is_default }}">
+
+                {% if address.is_default %}
+                  <span class="default-badge">Default</span>
+                {% endif %}
+                <div class="address-content">
+                  <h4>{{address.label}} Address</h4>
+
+                  <p><strong>{{address.first_name}} {{address.last_name}}</strong></p>
+                  <p>{{address.phone}}</p>
+
+                  <p>{{address.address_line_1}}</p>
+                  {% if address.address_line_2 %}
+                    <p>{{address.address_line_2}}</p>
+                  {% endif %}
+                  <p>{{address.city}} - {{address.pincode}} </p>
+                  <p>{{address.state}}, {{address.country}}</p>
+                
+                {% if not address.is_default %}
+                    <form method="POST" style="display:inline">
+                     {% csrf_token %}
+                     <input type="hidden" name="set_default_address" value="{{ address.id }}">
+                      <button type="submit" class="btn-small btn-secondary">
+                        <i class="fas fa-star"></i> Set as Default
+                      </button>
+                    </form>
+                {% endif %}
+
+                </div>
+                <div class="address-actions">
+                  <button class="btn-small btn-primary" onclick="editAddress({{address.id}})">
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                  <form method="POST" style="display:inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="delete_address" value="{{ address.id }}">
+                      <button type="submit" class="btn-small btn-danger" onclick="return confirm('Delete this address?');">
+                        <i class="fas fa-trash"></i> Delete
+                      </button>
+                    </form>
+
+                </div>
+              </div>
+
+            {% endfor %} 
+          {% else %}
+                <p style="color:#64748b;">No saved addresses yet.</p>
+          {% endif %}
+
+          
+        </div>
+        
+        <button class="btn-add-address" onclick="openAddAddressModal()">
+          <i class="fas fa-plus-circle"></i> Add New Address
+        </button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT ADDRESS MODAL -->
+
+<div class="modal-overlay" id="address-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modal-title">Add New Address</h3>
+      <button class="modal-close" onclick="closeAddressModal()">×</button>
+    </div>
+    
+    <form method="POST" id="address-form">
+    {% csrf_token %}
+    <input type="hidden" name="add_address_form" value="1">
+    <input type="hidden" name="edit_address_id" id="edit_address_id">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" name="first_name" class="form-input" placeholder="John" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" name="last_name" class="form-input" placeholder="Doe" required>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" name="phone" class="form-input" placeholder="+1 (555) 123-4567" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Address Line 1</label>
+        <input type="text" name="address_line_1" class="form-input" placeholder="123 Main Street" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Address Line 2 (Optional)</label>
+        <input type="text" name="address_line_2" class="form-input" placeholder="Apt 4B, Building C">
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <input type="text" name="city" class="form-input" placeholder="New York" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">State/Province</label>
+          <input type="text" name="state" class="form-input" placeholder="NY" required>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">PIN/Postal Code</label>
+          <input type="text" name="pincode" class="form-input" placeholder="10001" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Country</label>
+          <input type="text" name="country" class="form-input" placeholder="United States" required>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Address Label</label>
+        <input type="text" name="label" class="form-input" placeholder="Home, Office, etc." required>
+      </div>
+      
+      <div class="form-checkbox">
+        <input type="checkbox" name="is_default" id="default-address-checkbox">
+        <label for="default-address-checkbox">Set as default address</label>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeAddressModal()">
+          Cancel
+        </button>
+        <button type="submit" class="btn-save">
+          <i class="fas fa-check"></i> Save Address
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div class="modal-overlay" id="password-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Change Password</h3>
+      <button class="modal-close" onclick="closePasswordModal()">×</button>
+    </div>
+
+    <form method="POST" action="{% url 'change_password' %}">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label">Current Password</label>
+        <input type="password" name="old_password" class="form-input" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <input type="password" name="new_password1" class="form-input" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Confirm New Password</label>
+        <input type="password" name="new_password2" class="form-input" required>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closePasswordModal()">
+          Cancel
+        </button>
+        <button type="submit" class="btn-save">
+          Update Password
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+
+
+
+{% block extra_js %}
+<script>
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* ================= PROFILE PIC PREVIEW ================= */
+  const picInput = document.getElementById('profile-pic-input');
+  const picDisplay = document.getElementById('profile-pic-display');
+  const pfpForm = document.getElementById('pfp-form');
+
+const MAX_SIZE_MB = 2;
+
+picInput.addEventListener('change', () => {
+  const file = picInput.files[0];
+  if (!file) return;
+
+  // ❌ Size validation
+  if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+    showToast('Image must be under 2MB', 'error');
+    picInput.value = ''; // reset input
+    return; // 🚨 STOP here (no submit)
+  }
+
+  // ❌ Type validation
+  if (!file.type.startsWith('image/')) {
+    showToast('Only image files are allowed', 'error');
+    picInput.value = '';
+    return;
+  }
+
+  // ✅ Preview
+  const reader = new FileReader();
+  reader.onload = e => {
+    picDisplay.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+
+  // ✅ ONLY submit if validation passed
+  document.getElementById('pfp-form').submit();
+});
+
+
+
+  /* ================= EDIT MODE HANDLER ================= */
+  window.toggleEdit = function(section) {
+    const form = document.getElementById(section + '-form');
+    const inputs = form.querySelectorAll('.form-input, .form-textarea, select');
+    const actions = document.getElementById(section + '-actions');
+    const editBtn = form.closest('.profile-card').querySelector('.btn-edit');
+
+    inputs.forEach(input => {
+      input.dataset.originalValue = input.value;
+      input.disabled = false;
+    });
+
+    actions.style.display = 'block';
+    if (editBtn) editBtn.style.display = 'none';
+  };
+
+  window.cancelEdit = function(section) {
+    const form = document.getElementById(section + '-form');
+    const inputs = form.querySelectorAll('.form-input, .form-textarea, select');
+    const actions = document.getElementById(section + '-actions');
+    const editBtn = form.closest('.profile-card').querySelector('.btn-edit');
+
+    inputs.forEach(input => {
+    if (input.dataset.originalValue !== undefined) {
+      input.value = input.dataset.originalValue;
+    }
+    input.disabled = true;
+  });
+
+    actions.style.display = 'none';
+    if (editBtn) editBtn.style.display = 'flex';
+  };
+
+window.openPasswordModal = function () {
+  document.getElementById('password-modal').classList.add('active');
+};
+
+window.closePasswordModal = function () {
+  document.getElementById('password-modal').classList.remove('active');
+};
+
+  /* ================= ADDRESS MODAL ================= */
+  const modal = document.getElementById('address-modal');
+  const modalTitle = document.getElementById('modal-title');
+  const addressForm = document.getElementById('address-form');
+
+  window.openAddAddressModal = function() {
+    modalTitle.innerText = 'Add New Address';
+    addressForm.reset();
+    modal.classList.add('active');
+  };
+
+  window.closeAddressModal = function() {
+    modal.classList.remove('active');
+  };
+
+  modal.addEventListener('click', e => {
+    if (e.target === modal) closeAddressModal();
+  });
+
+
+  /* ================= ADDRESS ACTIONS ================= */
+ 
+/* ================= ADDRESS ACTIONS ================= */
+window.editAddress = function (id) {
+  const card = document.querySelector(`.address-card[data-id="${id}"]`);
+  const form = document.getElementById('address-form');
+
+  // Title + hidden ID
+  document.getElementById('modal-title').innerText = 'Edit Address';
+  document.getElementById('edit_address_id').value = id;
+
+  // Fill modal form fields (SCOPED)
+  form.querySelector('[name="first_name"]').value = card.dataset.firstName || '';
+  form.querySelector('[name="last_name"]').value = card.dataset.lastName || '';
+  form.querySelector('[name="phone"]').value = card.dataset.phone || '';
+  form.querySelector('[name="address_line_1"]').value = card.dataset.address1 || '';
+  form.querySelector('[name="address_line_2"]').value = card.dataset.address2 || '';
+  form.querySelector('[name="city"]').value = card.dataset.city || '';
+  form.querySelector('[name="state"]').value = card.dataset.state || '';
+  form.querySelector('[name="country"]').value = card.dataset.country || '';
+  form.querySelector('[name="pincode"]').value = card.dataset.pincode || '';
+  form.querySelector('[name="label"]').value = card.dataset.label || '';
+
+  // Default checkbox
+  form.querySelector('[name="is_default"]').checked =
+    card.dataset.default === 'True';
+
+  // Open modal
+  document.getElementById('address-modal').classList.add('active');
+};
+window.openAddAddressModal = function () {
+  const form = document.getElementById('address-form');
+
+  document.getElementById('modal-title').innerText = 'Add New Address';
+  document.getElementById('edit_address_id').value = '';
+  form.reset();
+
+  document.getElementById('address-modal').classList.add('active');
+};
+
+
+
+  /* ================= SECURITY ACTIONS ================= */
+});
+
+</script>
+{% endblock %}

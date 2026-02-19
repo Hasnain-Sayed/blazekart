@@ -1,0 +1,243 @@
+{% extends 'dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Recent Orders - {{ user.first_name }} {{ user.last_name }}{% endblock %}
+{% block nav_orders %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+.order-wrapper {
+  background: #f8fafc;
+  padding: 40px 0;
+}
+
+.order-page {
+  max-width: 95%;
+  margin: auto;
+  padding: 0 20px;
+}
+
+.order-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.stat-card p {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.stat-card h3 {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.stat-card.success h3 {
+  color: #16a34a;
+}
+
+.stat-card.pending h3 {
+  color: #f59e0b;
+}
+
+.stat-card.cancelled h3 {
+  color: #f5220bff;
+}
+
+.orders-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.orders-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.orders-subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid #eef2f7;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.orders-table th {
+  text-align: left;
+  font-size: 0.85rem;
+  color: #6b7280;
+  padding: 12px 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.orders-table td {
+  padding: 14px 10px;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.orders-table tbody tr {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.orders-table tbody tr:hover {
+  background-color: rgba(37, 99, 235, 0.05);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.10),
+    0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* STATUS BADGES */
+.status {
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status.success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status.cancelled {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+.page-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #788493ff;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-title">Recent Orders</div>
+
+{% if orders %}
+<section class="order-wrapper">
+  <div class="order-page">
+
+    <!-- STATS -->
+    <div class="order-stats">
+      <div class="stat-card">
+        <p>Total Orders</p>
+        <h3>{{ order_count }}</h3>
+      </div>
+
+      <div class="stat-card success">
+        <p>Completed</p>
+        <h3>{{ order_complete }}</h3>
+      </div>
+
+      <div class="stat-card pending">
+        <p>Pending</p>
+        <h3>{{ order_new }}</h3>
+      </div>
+
+      <div class="stat-card cancelled">
+        <p>Cancelled</p>
+        <h3>{{ order_cancelled }}</h3>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="orders-box">
+      <h3 class="orders-title">Order History</h3>
+      <p class="orders-subtitle">
+        A summary of your past orders and their current status
+      </p>
+
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Order Number</th>
+            <th>Date</th>
+            <th>Transaction ID</th>
+            <th>Payment</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr onclick="window.location.href='{% url 'order_details' order.order_number %}'">
+            <td>{{ order.order_number }}</td>
+            <td>{{ order.order_date }}</td>
+            <td>{{ order.payment.payment_id }}</td>
+            <td>{{ order.payment.payment_method }}</td>
+            <td>${{ order.order_total }}</td>
+            <td>
+              {% if order.status == "Completed" %}
+                <span class="status success">Completed</span>
+              {% elif order.status == "New" %}
+                <span class="status pending">Pending</span>
+              {% elif order.status == "Cancelled" %}
+                <span class="status cancelled">Cancelled</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+{% else %}
+
+<div style="
+  height: calc(92vh - 120px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+">
+  <img src="{% static 'images/icons/no_orders.png' %}" style="width: 420px; max-width: 90%;">
+  <a href="{% url 'store' %}"
+     style="
+      margin-top: 30px;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #3f9edd, #2563eb);
+      color: white;
+      border-radius: 999px;
+      font-weight: 600;
+      text-decoration: none;
+     ">
+    🛍️ Order something
+  </a>
+</div>
+
+{% endif %}
+{% endblock %}

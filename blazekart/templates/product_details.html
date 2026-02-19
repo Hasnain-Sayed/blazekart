@@ -1,0 +1,1473 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% block extra_css %}
+
+<style>
+/* ================= BEAUTIFUL REVIEW SECTIONS ================= */
+
+/* SIDE-BY-SIDE LAYOUT WRAPPER */
+.reviews-container {
+  display: flex;
+  gap: 24px;
+  margin-top: 24px;
+  align-items: flex-start;
+}
+
+/* LEFT: Edit Review - 32% */
+.add-review-section {
+  flex: 0 0 32%;
+  background: #ffffff;
+  border-radius: 16px;
+  min-width: 360px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 20px;
+}
+
+/* RIGHT: Customer Reviews - 68% */
+.reviews-section {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.add-review-section h4,
+.reviews-section h4 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-review-section h4:before {
+  content: "✍️";
+  font-size: 1.5rem;
+}
+
+.reviews-section h4:before {
+  content: "💬";
+  font-size: 1.5rem;
+}
+
+/* Review Form Styling - COMPACT */
+.add-review-section form {
+  background: #f9fafb;
+  padding: 18px;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+}
+
+.add-review-section textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+  resize: vertical;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  line-height: 1.5;
+  min-height: 120px;
+  margin-bottom: 10px;
+}
+
+.add-review-section textarea:focus {
+  outline: none;
+  border-color: #6d5dfc;
+  box-shadow: 0 0 0 3px rgba(109, 93, 252, 0.1);
+}
+
+/* Star Rating - Compact */
+.star-rating {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  gap: 4px;
+  font-size: 1.6rem;
+  margin: 6px 0 10px 0;
+}
+
+.star-rating input {
+  display: none;
+}
+
+.star-rating label {
+  color: #d1d5db;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.star-rating label:hover {
+  transform: scale(1.1);
+}
+
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+  color: #fbbf24;
+}
+
+/* Submit Button - Compact */
+.add-review-section .btn-primary {
+  background: linear-gradient(135deg, #6d5dfc 0%, #8b5cf6 100%);
+  border: none;
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 12px rgba(109, 93, 252, 0.3);
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.add-review-section .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(109, 93, 252, 0.4);
+}
+
+/* Customer Reviews Section - GRID LAYOUT */
+.reviews-section {
+  background: linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%);
+}
+
+/* GRID FOR REVIEWS - 2 COLUMNS */
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.review-card {
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.review-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+}
+
+/* Review Header */
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.review-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #f3f4f6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.review-header > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.review-header strong {
+  font-size: 0.95rem;
+  color: #1f2937;
+  font-weight: 600;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.review-header small {
+  color: #6b7280;
+  font-size: 0.8rem;
+  display: block;
+}
+
+.text-muted {
+  color: #9ca3af !important;
+  font-style: italic;
+  font-size: 0.75rem;
+}
+
+.review-header .btn-outline-danger {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-30%);
+  margin: 0;
+}
+
+/* Delete Button - Compact */
+.btn-outline-danger {
+  padding: 3px 10px;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  margin-top: 4px;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-danger:hover {
+  transform: scale(1.05);
+}
+
+/* Review Stars */
+.review-stars {
+  font-size: 1.1rem;
+  margin: 8px 0;
+  letter-spacing: 1px;
+}
+
+/* Review Text */
+.review-text {
+  margin: 10px 0;
+  line-height: 1.6;
+  color: #374151;
+  font-size: 0.9rem;
+  padding: 10px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border-left: 3px solid #6d5dfc;
+  flex-grow: 1;
+}
+
+/* Review Media - Limited Display with Overlay */
+.review-media {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 10px;
+}
+.review-media-wrapper {
+  position: relative;
+}
+
+.media-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.media-overlay:hover {
+  background: rgba(0, 0, 0, 0.85);
+  font-size: 2rem;
+}
+
+
+.review-img {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.review-img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.review-video {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: black;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.review-video:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: scale(1.05);
+}
+
+/* Review Actions (Likes/Dislikes) */
+.review-actions {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.85rem;
+  color: #6b7280;
+  display: flex;
+  gap: 16px;
+}
+
+.review-actions button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-right: 10px;
+  color: #6b7280;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.review-actions button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.review-actions button:hover {
+  color: #2563eb;
+  transform: scale(1.1);
+}
+
+.review-actions button.active {
+  font-weight: bold;
+  color: #2563eb;
+}
+
+/* No Reviews Message */
+.reviews-section > p {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 1rem;
+  padding: 40px;
+  background: #f9fafb;
+  border-radius: 10px;
+  border: 2px dashed #e5e7eb;
+}
+
+/* Login Link */
+.add-review-section > p {
+  background: #fef3c7;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 4px solid #fbbf24;
+  color: #92400e;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.add-review-section > p a {
+  color: #6d5dfc;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.add-review-section > p a:hover {
+  color: #5b4ace;
+}
+
+/* ================= MODAL STYLES ================= */
+
+/* Modal Dialog */
+#mediaViewerModal .modal-dialog {
+  max-width: 90vw;
+}
+
+/* Modal Content */
+#mediaViewerModal .modal-content {
+  background: rgba(0, 0, 0, 0.95) !important;
+  border: none;
+  border-radius: 0;
+}
+
+/* Close Button Container */
+.modal-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 2000;
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: #fbbf24;
+  transform: rotate(90deg);
+}
+
+.modal-close-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke: white;
+  transition: all 0.3s ease;
+}
+
+.modal-close-btn:hover svg {
+  stroke: #fbbf24;
+}
+
+/* Modal Body */
+#mediaViewerModal .modal-body {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px 40px;
+  position: relative;
+}
+
+/* Media Container */
+#mediaViewerContent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#mediaViewerContent img {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+#mediaViewerContent video {
+  max-width: 90%;
+  max-height: 75vh;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+/* Navigation Buttons */
+.media-nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 3rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  cursor: pointer;
+  padding: 15px 25px;
+  z-index: 1060;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.media-nav.left { 
+  left: 20px; 
+}
+
+.media-nav.right { 
+  right: 20px; 
+}
+
+.media-nav:hover {
+  background: rgba(0, 0, 0, 0.9);
+  border-color: #fbbf24;
+  color: #fbbf24;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.media-nav:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* Lazy Loading Styles */
+.lazy-media {
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+}
+
+.lazy-media.loaded {
+  opacity: 1;
+}
+
+.lazy-media.loading {
+  background: #f3f4f6;
+  position: relative;
+}
+
+.lazy-media.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #e5e7eb;
+  border-top-color: #6d5dfc;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Placeholder for videos */
+.review-video.lazy-media::before {
+  content: '▶';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  color: white;
+  z-index: 1;
+}
+
+/* File Upload Styling */
+.review-media-upload {
+  margin-top: 12px;
+}
+
+.review-media-upload label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.review-media-upload input[type="file"] {
+  display: none; /* Hide default file input */
+}
+
+.custom-file-upload {
+  display: inline-block;
+  width: 100%;
+  padding: 12px 16px;
+  background: white;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.custom-file-upload:hover {
+  border-color: #6d5dfc;
+  background: #f9fafb;
+}
+
+.custom-file-upload i {
+  margin-right: 8px;
+  font-size: 1.1rem;
+  color: #6d5dfc;
+}
+
+.file-upload-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.file-upload-text strong {
+  color: #6d5dfc;
+  font-weight: 600;
+}
+
+.file-upload-text small {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* Selected files display */
+.selected-files {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #059669;
+  font-weight: 500;
+}
+.hidden-media {
+  display: none !important;
+}
+/* Back to Top Button */
+#backToTop {
+  position: fixed;
+  bottom: 65px;
+  right: 60px;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #6d5dfc 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(109, 93, 252, 0.4);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#backToTop.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+#backToTop:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(109, 93, 252, 0.6);
+}
+
+#backToTop:active {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  #backToTop {
+    bottom: 20px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+    font-size: 1.3rem;
+  }
+}
+
+/* ================= RESPONSIVE DESIGN ================= */
+
+@media (max-width: 1400px) {
+  .reviews-container {
+    flex-direction: column;
+  }
+
+  .add-review-section {
+    flex: 1;
+    width: 100%;
+    position: relative;
+    top: 0;
+  }
+
+  .add-review-section form {
+    max-width: 600px;
+  }
+
+  .reviews-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .reviews-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .add-review-section,
+  .reviews-section {
+    padding: 18px;
+    min-width: auto;
+  }
+
+  .add-review-section form {
+    padding: 14px;
+  }
+
+  .star-rating {
+    font-size: 1.5rem;
+    gap: 3px;
+  }
+
+  .review-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  /* Modal adjustments for mobile */
+  .media-nav {
+    font-size: 2rem;
+    padding: 10px 15px;
+  }
+  
+  .media-nav.left { 
+    left: 10px; 
+  }
+  
+  .media-nav.right { 
+    right: 10px; 
+  }
+  
+  .modal-close-btn {
+    width: 40px;
+    height: 40px;
+    top: 10px;
+    right: 10px;
+  }
+  
+  .modal-close-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+.loading-reviews {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+</style>
+{% endblock %} 
+
+{% block content %}
+
+<section class="section-content padding-y bg">
+  <div class="container">
+    <div class="card">
+      <div class="row no-gutters">
+        <aside class="col-md-6">
+          <article class="gallery-wrap">
+            <div class="img-big-wrap">
+              <a href="#"><img src="{{ single_product.images.url }}" /></a>
+            </div>
+          </article>
+        </aside>
+
+        <main class="col-md-6 border-left">
+          <!-- SINGLE FORM FOR CART & WISHLIST -->
+          <article class="content-body">
+            <form
+              method="POST"
+              action="{% url 'handle_product_action' single_product.id %}"
+            >
+              {% csrf_token %}
+              <h2 class="title">{{ single_product.product_name }}</h2>
+
+              <div class="mb-3">
+                <var class="price h4 text-success"
+                  >${{ single_product.price }}</var
+                >
+              </div>
+
+              <p>{{ single_product.description }}</p>
+              <hr />
+
+              <!-- COLOR SELECT -->
+              <div class="mb-4">
+                {% if colors %}
+                <h6 class="mb-2">Choose Color</h6>
+                <select
+                  name="color"
+                  class="form-control rounded-pill"
+                  style="max-width: 250px"
+                >
+                  {% for c in colors %}
+                  <option value="{{ c.variation_value }}">
+                    {{ c.variation_value }}
+                  </option>
+                  {% endfor %}
+                </select>
+                {% else %}
+                <span class="alert alert-warning py-2 px-3 mb-0">
+                  Sorry, no color options available.
+                </span>
+                {% endif %}
+              </div>
+
+              <!-- SIZE SELECT -->
+              <div class="mb-4">
+                {% if sizes %}
+                <h6>Select Size</h6>
+                <select
+                  name="size"
+                  class="form-control rounded-pill"
+                  style="max-width: 250px"
+                >
+                  {% for s in sizes %}
+                  <option value="{{ s.variation_value }}">
+                    {{ s.variation_value }}
+                  </option>
+                  {% endfor %}
+                </select>
+                {% else %}
+                <span class="alert alert-warning py-2 px-3 mb-0">
+                  Sorry, no size options available.
+                </span>
+                {% endif %}
+              </div>
+
+              <hr />
+              <!-- TWO BUTTONS -->
+              <button
+                type="submit"
+                name="action"
+                value="cart"
+                class="btn btn-primary mr-2"
+              >
+                <span>Add to Cart</span> <i class="fas fa-shopping-cart"></i>
+              </button>
+              <button
+                type="submit"
+                name="action"
+                value="wishlist"
+                class="btn btn-info"
+              >
+                <span>Add to Wishlist</span> <i class="fas fa-bookmark"></i>
+              </button>
+            </form>
+          </article>
+        </main>
+      </div>
+    </div>
+
+    <br />
+    <hr />
+
+    <!-- REVIEWS CONTAINER: Side by Side Layout -->
+    <div class="reviews-container">
+      <!-- LEFT: Edit/Add Review Section -->
+      <section class="add-review-section">
+        <h4>
+          {% if user_review %} 
+            Edit Your Review 
+        {% else %} 
+            Add a Review
+            {% endif %}
+        </h4>
+
+        {% if user.is_authenticated %}
+        <form action="{% url 'add_review' single_product.id %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <!-- STAR RATING -->
+          <div class="star-rating">
+            {% for i in "54321" %}
+                <input
+                    type="radio"
+                    name="rating"
+                    value="{{ i }}"
+                    id="star{{ i }}"
+                    {% if user_review and user_review.rating == i|add:"0" %}
+                        checked
+                    {% endif %}
+                >
+                <label for="star{{ i }}">★</label>
+            {% endfor %}
+        </div>
+
+          <!-- REVIEW TEXT -->
+          <textarea name="review_text" rows="6" maxlength="1000" placeholder="Share your experience with this product..." style="min-height: 150px; width: 100%;" required>{% if user_review %}{{ user_review.review_text }}{% endif %}</textarea>
+          <!-- REVIEW MEDIA -->
+          <div class="review-media-upload mt-2">
+            <label>Add photos or videos (optional)</label>
+            
+            <input
+              type="file"
+              name="review_media"
+              id="reviewMediaInput"
+              multiple
+              accept="image/*,video/*"
+            >
+            
+            <label for="reviewMediaInput" class="custom-file-upload">
+              <div class="file-upload-text">
+                <div>
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <strong>Choose Files</strong>
+                </div>
+                <small>You can add up to 5 photos or short videos</small>
+              </div>
+            </label>
+            
+            <div class="selected-files" id="selectedFiles"></div>
+          </div>
+
+        <button type="submit" class="btn btn-primary mt-2">
+        {% if user_review %} Update Review {% else %} Submit Review {% endif %}
+        </button>
+        </form>
+
+        {% else %}
+        <p><a href="{% url 'login' %}">Login</a> to write a review.</p>
+        {% endif %}
+        </section>
+
+      <!-- RIGHT: Customer Reviews Section -->
+        <section class="reviews-section">
+          <h4>Customer Reviews</h4>
+          {% if reviews %}
+            <div class="reviews-grid">
+              {% include 'partials/review_card.html' with reviews=reviews %}
+            </div>
+            
+            <!-- Loading indicator -->
+            <div id="reviewsLoading" style="display: none; text-align: center; padding: 20px; color: #6b7280;">
+              <i class="fas fa-spinner fa-spin"></i> Loading more reviews...
+            </div>
+            
+            <!-- End of reviews message -->
+            <div id="noMoreReviews" style="display: none; text-align: center; padding: 20px; color: #9ca3af; font-size: 0.9rem;">
+              No more reviews to load
+            </div>
+          {% else %}
+            <p>No reviews yet. Be the first to review this product!</p>
+          {% endif %}
+        </section>
+    </div>
+
+  </div>
+</section>
+
+
+
+
+<!-- Review Media Viewer Modal -->
+<div class="modal fade" id="mediaViewerModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      
+      <div class="modal-body">
+        <!-- Custom Close Button INSIDE modal-body -->
+        <div class="modal-close-btn" id="modalCloseBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </div>
+        
+        <!-- Media container -->
+        <div id="mediaViewerContent"></div>
+
+        <!-- Navigation Buttons -->
+        <button class="media-nav left" id="prevMediaBtn">❮</button>
+        <button class="media-nav right" id="nextMediaBtn">❯</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Back to Top Button -->
+<button id="backToTop" title="Go to top">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+{% endblock %}
+
+
+
+
+
+
+
+{% block extra_js %}
+
+<script>
+
+document.querySelectorAll('.review-actions button').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const action = this.dataset.action;
+        const wrapper = this.closest('.review-actions');
+        const reviewId = wrapper.dataset.review;
+
+        fetch("{% url 'review_react' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "X-Requested-With": "XMLHttpRequest",
+            },
+            body: new URLSearchParams({
+                review_id: reviewId,
+                action: action
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) return;
+
+            wrapper.querySelector('.like-count').textContent = data.likes;
+            wrapper.querySelector('.dislike-count').textContent = data.dislikes;
+
+            wrapper.querySelector('.review-like')
+                .classList.toggle('active', data.user_liked);
+            wrapper.querySelector('.review-dislike')
+                .classList.toggle('active', data.user_disliked);
+        });
+    });
+});
+
+// ============================================
+// MEDIA VIEWER MODAL
+// ============================================
+let mediaIndex = 0;
+let activeReview = null;
+let mediaMap = {};
+let mediaModalInstance = null;
+
+// DEFINE mediaModalEl HERE - AT THE TOP
+const mediaModalEl = document.getElementById('mediaViewerModal');
+
+// Initialize media items with click handlers
+document.querySelectorAll('.review-media-wrapper').forEach(wrapper => {
+    wrapper.addEventListener('click', () => {
+        const item = wrapper.querySelector('.review-media-item');
+        const reviewId = item.dataset.review;
+        mediaIndex = parseInt(item.dataset.index);
+        activeReview = reviewId;
+
+        // Build media map for this review if not already built
+        if (!mediaMap[reviewId]) {
+            // Get ALL media items (including hidden ones) for this review
+            mediaMap[reviewId] = Array.from(
+                document.querySelectorAll(`.review-media-item[data-review="${reviewId}"]`)
+            ).map(el => ({
+                type: el.dataset.type,
+                src: el.tagName === 'IMG'
+                    ? el.src
+                    : el.querySelector('source').src
+            }));
+        }
+
+        showMedia();
+        openModal();
+    });
+});
+
+// Open modal
+function openModal() {
+    mediaModalInstance = new bootstrap.Modal(mediaModalEl, {
+        backdrop: true,
+        keyboard: true
+    });
+    mediaModalInstance.show();
+}
+
+// Close modal function - ENHANCED
+function closeModal() {
+    // Stop videos BEFORE closing modal
+    const container = document.getElementById('mediaViewerContent');
+    const videos = container.querySelectorAll('video');
+    videos.forEach(v => {
+        v.pause();
+        v.muted = true; // Mute it
+        v.src = '';
+        v.load();
+    });
+    
+    // Then close modal
+    if (mediaModalInstance) {
+        mediaModalInstance.hide();
+    }
+}
+
+// Display current media in modal
+function showMedia() {
+    const media = mediaMap[activeReview][mediaIndex];
+    const container = document.getElementById('mediaViewerContent');
+
+    container.innerHTML = ""; // clear previous media
+
+    if (media.type === 'image') {
+        container.innerHTML = `<img src="${media.src}" class="img-fluid">`;
+    } else {
+        // Video without loop attribute
+        container.innerHTML = `
+            <video controls autoplay muted>
+                <source src="${media.src}">
+            </video>`;
+    }
+}
+
+// Navigate to next media
+function nextMedia() {
+    mediaIndex = (mediaIndex + 1) % mediaMap[activeReview].length;
+    showMedia();
+}
+
+// Navigate to previous media
+function prevMedia() {
+    mediaIndex = (mediaIndex - 1 + mediaMap[activeReview].length) % mediaMap[activeReview].length;
+    showMedia();
+}
+
+// Event listeners for navigation
+document.getElementById('nextMediaBtn').addEventListener('click', nextMedia);
+document.getElementById('prevMediaBtn').addEventListener('click', prevMedia);
+
+// Close button event
+document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+
+// Clean up when modal is closed
+mediaModalEl.addEventListener('hidden.bs.modal', () => {
+    const container = document.getElementById('mediaViewerContent');
+    
+    // NUCLEAR OPTION: Completely destroy all media
+    const videos = container.querySelectorAll('video');
+    videos.forEach(v => {
+        v.pause();
+        v.src = '';
+        v.load();
+        v.remove(); // Remove from DOM
+    });
+
+    // Clear container completely
+    container.innerHTML = "";
+
+    mediaIndex = 0;
+    activeReview = null;
+    mediaModalInstance = null;
+});
+
+// Click outside to close modal
+mediaModalEl.addEventListener('click', function(e) {
+    // Close if clicking on the backdrop (modal itself, not its children)
+    if (e.target === mediaModalEl || 
+        e.target.classList.contains('modal-dialog') || 
+        e.target.classList.contains('modal-body')) {
+        
+        // Stop videos BEFORE closing
+        const container = document.getElementById('mediaViewerContent');
+        const videos = container.querySelectorAll('video');
+        videos.forEach(v => {
+            v.pause();
+            v.muted = true;
+            v.src = '';
+            v.load();
+        });
+        
+        // Then close modal
+        closeModal();
+    }
+});
+
+// ============================================
+// FILE UPLOAD VALIDATION
+// ============================================
+const fileInput = document.querySelector('input[name="review_media"]');
+if (fileInput) {
+    fileInput.addEventListener('change', function () {
+        const files = this.files;
+
+        // Check file count
+        if (files.length > 5) {
+            alert("You can upload up to 5 files only.");
+            this.value = "";
+            return;
+        }
+
+        // Validate each file
+        for (let file of files) {
+            // Image validation
+            if (file.type.startsWith("image")) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert("Each image must be under 5MB.");
+                    this.value = "";
+                    return;
+                }
+            }
+
+            // Video validation
+            if (file.type.startsWith("video")) {
+                if (file.size > 20 * 1024 * 1024) {
+                    alert("Each video must be under 20MB.");
+                    this.value = "";
+                    return;
+                }
+
+                // Check video duration
+                const video = document.createElement("video");
+                video.preload = "metadata";
+
+                video.onloadedmetadata = () => {
+                    if (video.duration > 15) {
+                        alert("Videos must be 15 seconds or shorter.");
+                        this.value = "";
+                    }
+                    URL.revokeObjectURL(video.src);
+                };
+
+                video.src = URL.createObjectURL(file);
+            }
+        }
+    });
+}
+// ============================================
+// LAZY LOADING FOR MEDIA
+// ============================================
+
+// Intersection Observer options
+const observerOptions = {
+  root: null, // viewport
+  rootMargin: '50px', // start loading 50px before entering viewport
+  threshold: 0.01
+};
+
+// Create observer
+const mediaObserver = new IntersectionObserver((entries, observer) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const media = entry.target;
+      
+      // For images
+      if (media.tagName === 'IMG') {
+        const imgSrc = media.dataset.src || media.src;
+        const img = new Image();
+        img.onload = () => {
+          media.src = imgSrc;
+          media.classList.add('loaded');
+          media.classList.remove('loading');
+        };
+        img.onerror = () => {
+          media.classList.remove('loading');
+          console.error('Failed to load image:', imgSrc);
+        };
+        img.src = imgSrc;
+        media.classList.add('loading');
+      }
+      
+      // For videos
+      if (media.tagName === 'VIDEO') {
+        const source = media.querySelector('source');
+        if (source) {
+          const videoSrc = source.dataset.src || source.src;
+          source.src = videoSrc;
+          media.load();
+        }
+        media.classList.add('loaded');
+        media.classList.remove('loading');
+      }
+      
+      // Stop observing this element
+      observer.unobserve(media);
+    }
+  });
+}, observerOptions);
+
+// Observe all lazy media elements
+document.addEventListener('DOMContentLoaded', () => {
+  const lazyMedia = document.querySelectorAll('.lazy-media');
+  lazyMedia.forEach(media => {
+    media.classList.add('loading');
+    mediaObserver.observe(media);
+  });
+});
+
+
+// ============================================
+// REMOVE TEXTAREA WHITESPACE ON LOAD
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.querySelector('.add-review-section textarea[name="review_text"]');
+    if (textarea && textarea.value) {
+        textarea.value = textarea.value.trim();
+    }
+});
+
+
+// ============================================
+// FILE UPLOAD - SHOW SELECTED FILES
+// ============================================
+const reviewMediaInput = document.getElementById('reviewMediaInput');
+const selectedFilesDiv = document.getElementById('selectedFiles');
+
+if (reviewMediaInput) {
+  reviewMediaInput.addEventListener('change', function() {
+    const files = this.files;
+    
+    if (files.length > 0) {
+      const fileNames = Array.from(files).map(f => f.name).join(', ');
+      selectedFilesDiv.textContent = `✓ ${files.length} file(s) selected: ${fileNames}`;
+    } else {
+      selectedFilesDiv.textContent = '';
+    }
+  });
+}
+
+
+// ============================================
+// INFINITE SCROLL FOR REVIEWS
+// ============================================
+let reviewPage = 1;
+let loadingReviews = false;
+let hasNextReviews = true;
+
+window.addEventListener('scroll', () => {
+  if (!hasNextReviews || loadingReviews) return;
+
+  const scrollPosition = window.innerHeight + window.scrollY;
+  const pageHeight = document.body.offsetHeight;
+
+  // Load more when 400px from bottom
+  if (scrollPosition > pageHeight - 400) {
+    loadMoreReviews();
+  }
+});
+
+function loadMoreReviews() {
+  loadingReviews = true;
+  reviewPage++;
+
+  // Show loading indicator (optional)
+  const reviewsGrid = document.querySelector('.reviews-grid');
+  const loader = document.createElement('div');
+  loader.className = 'loading-reviews';
+  loader.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; padding: 20px;">Loading more reviews...</p>';
+  reviewsGrid.appendChild(loader);
+
+  fetch(`/reviews/load-more/?product_id={{ single_product.id }}&page=${reviewPage}`)
+    .then(res => res.json())
+    .then(data => {
+      // Remove loader
+      const loaderEl = document.querySelector('.loading-reviews');
+      if (loaderEl) loaderEl.remove();
+
+      if (!data.html || data.html.trim() === '') {
+        hasNextReviews = false;
+        return;
+      }
+
+      // Insert new reviews
+      reviewsGrid.insertAdjacentHTML('beforeend', data.html);
+
+      // Re-initialize event listeners for new reviews
+      initializeNewReviews();
+
+      hasNextReviews = data.has_next;
+      loadingReviews = false;
+    })
+    .catch(err => {
+      console.error('Error loading reviews:', err);
+      const loaderEl = document.querySelector('.loading-reviews');
+      if (loaderEl) loaderEl.remove();
+      loadingReviews = false;
+    });
+}
+
+// Initialize event listeners for newly loaded reviews
+function initializeNewReviews() {
+  // Re-attach like/dislike handlers
+  document.querySelectorAll('.review-actions button').forEach(btn => {
+    // Remove old listeners to avoid duplicates
+    btn.replaceWith(btn.cloneNode(true));
+  });
+
+  document.querySelectorAll('.review-actions button').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const action = this.dataset.action;
+      const wrapper = this.closest('.review-actions');
+      const reviewId = wrapper.dataset.review;
+
+      fetch("{% url 'review_react' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        body: new URLSearchParams({
+          review_id: reviewId,
+          action: action
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) return;
+
+          wrapper.querySelector('.like-count').textContent = data.likes;
+          wrapper.querySelector('.dislike-count').textContent = data.dislikes;
+
+          wrapper.querySelector('.review-like')
+            .classList.toggle('active', data.user_liked);
+          wrapper.querySelector('.review-dislike')
+            .classList.toggle('active', data.user_disliked);
+        });
+    });
+  });
+
+  // Re-attach media viewer handlers
+  document.querySelectorAll('.review-media-wrapper').forEach(wrapper => {
+    wrapper.addEventListener('click', () => {
+      const item = wrapper.querySelector('.review-media-item');
+      const reviewId = item.dataset.review;
+      mediaIndex = parseInt(item.dataset.index);
+      activeReview = reviewId;
+
+      if (!mediaMap[reviewId]) {
+        mediaMap[reviewId] = Array.from(
+          document.querySelectorAll(`.review-media-item[data-review="${reviewId}"]`)
+        ).map(el => ({
+          type: el.dataset.type,
+          src: el.tagName === 'IMG'
+            ? el.src
+            : el.querySelector('source').src
+        }));
+      }
+
+      showMedia();
+      openModal();
+    });
+  });
+
+  // Re-observe lazy media
+  const newLazyMedia = document.querySelectorAll('.lazy-media:not(.loaded):not(.loading)');
+  newLazyMedia.forEach(media => {
+    media.classList.add('loading');
+    mediaObserver.observe(media);
+  });
+}
+// ============================================
+// BACK TO TOP BUTTON
+// ============================================
+const backToTopBtn = document.getElementById('backToTop');
+
+// Show/hide button based on scroll position
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 300) {
+    backToTopBtn.classList.add('show');
+  } else {
+    backToTopBtn.classList.remove('show');
+  }
+});
+
+// Smooth scroll to top when clicked
+backToTopBtn.addEventListener('click', () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+});
+
+</script>
+
+
+{% endblock %}

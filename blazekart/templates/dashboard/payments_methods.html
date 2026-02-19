@@ -1,0 +1,238 @@
+{% extends 'dashboard/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Payment Methods{% endblock %}
+{% block nav_payments %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+
+.payment-section {
+  padding: 24px;
+  max-width: 760px;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.section-subtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+/* LIST */
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* CARD BASE */
+.payment-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+
+  transition: all 0.2s ease;
+}
+
+/* HOVER (ONLY ACTIVE) */
+.payment-card.active:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+}
+
+/* LEFT */
+.payment-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.payment-left img {
+  width: 55px;
+  height: 55px;
+
+  object-fit: contain;
+  object-position: center;
+
+  background: #f1f5f9;
+  border-radius: 50%;
+  padding: 10px;
+
+  box-shadow: inset 0 0 0 1px #e5e7eb;
+}
+
+
+/* PLACEHOLDER ICON */
+.placeholder-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f1f5f9;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 700;
+  color: #475569;
+}
+
+/* TEXT */
+.payment-card h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.payment-card p {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+/* STATUS BADGE */
+.status.success {
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 500;
+}
+
+/* ACTIVE CARD */
+.payment-card.active {
+  border-color: #3b82f6;
+  background: linear-gradient(
+    to right,
+    #eff6ff,
+    #ffffff
+  );
+}
+
+/* DISABLED */
+.payment-card.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+/* ===== DASHBOARD CARD (if not already present) ===== */
+.dashboard-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  max-width: 900px;
+  margin:auto;
+}
+
+/* Payment section spacing */
+.payment-section {
+  margin-top: 16px;
+}
+
+/* Payment cards spacing */
+.payment-methods {
+  margin-top: 20px;
+}
+
+/* ===== UPI INNER CARD (CART STYLE) ===== */
+.upi-wrapper {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.upi-inner-card {
+  width: 100%;
+  padding: 14px 16px;
+
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5f5;
+
+  display: flex;
+  gap: 16px;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+/* UPI app pills */
+.upi-inner-card span {
+  background: #e2e8f0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-card payment-section">
+
+  <h3 class="section-title">Payment Methods</h3>
+  <p class="section-subtitle">
+    Manage your saved and available payment options
+  </p>
+
+  <div class="payment-methods">
+
+    <!-- PAYPAL -->
+    <div class="payment-card active">
+      <div class="payment-left">
+        <img src="{% static 'images/misc/payment-paypal.png' %}" alt="PayPal">
+        <div>
+          <h4>PayPal</h4>
+          <p>Connected</p>
+        </div>
+      </div>
+
+      <div class="payment-right">
+        <span class="status success">Active</span>
+      </div>
+    </div>
+
+    <div class="payment-card disabled upi-wrapper">
+      <div class="payment-left">
+        <img src="{% static 'images/misc/upi-icon.webp' %}" alt="UPI">
+        <div>
+          <h4>UPI</h4>
+          <p>Coming soon</p>
+        </div>
+      </div>
+
+      <!-- INNER CARD (like cart theme) -->
+      <div class="upi-inner-card">
+        <span>Google Pay</span>
+        <span>PhonePe</span>
+        <span>Paytm</span>
+      </div>
+    </div>
+    <!-- COD -->
+    <div class="payment-card disabled">
+      <div class="payment-left">
+        <img src="{% static 'images/misc/cash.jpg' %}" alt="COD">
+        <div>
+          <h4>Cash on Delivery</h4>
+          <p>Available at checkout</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,87 @@
+{% load static %}
+{% for review in reviews %}
+<div class="review-card">
+  <!-- USER INFO -->
+  <div class="review-header">
+    {% if review.user.profile.profile_pic %}
+    <img src="{{ review.user.profile.profile_pic.url }}" class="review-avatar">
+    {% else %}
+    <img src="{% static 'images/avatars/default-avatar.png' %}" class="review-avatar">
+    {% endif %}
+
+    <div>
+      <strong>{{ review.user.full_name }}</strong><br>
+      <small>{{ review.created_at|date:"d, M Y" }}</small>
+
+      {% if user.is_authenticated and review.user == user %}
+      <small class="text-muted">(Your review)</small>
+      <form action="{% url 'delete_review' review.id %}"
+        method="POST"
+        style="display:inline"
+        onsubmit="return confirm('Are you sure you want to delete your review?');">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-danger">
+          Delete
+        </button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- STAR RATING -->
+  <div class="review-stars">
+    {% for i in "12345" %}
+    {% if forloop.counter <= review.rating %}
+    ⭐
+    {% else %}
+    ☆
+    {% endif %}
+    {% endfor %}
+  </div>
+
+  <!-- REVIEW TEXT -->
+  <p class="review-text">{{ review.review_text }}</p>
+
+  <!-- REVIEW MEDIA -->
+  {% if review.media.count %}
+  <div class="review-media" data-total-count="{{ review.media.count }}">
+    {% for media in review.media.all %}
+    <div class="review-media-wrapper {% if forloop.counter > 3 %}hidden-media{% endif %}">
+      {% if media.media_type == 'image' %}
+      <img src="{{ media.file.url }}"
+        class="review-img review-media-item lazy-media"
+        alt="Review image"
+        data-review="{{ review.id }}"
+        data-index="{{ forloop.counter0 }}"
+        data-type="image">
+      {% else %}
+      <video class="review-video review-media-item lazy-media"
+        preload="none"
+        data-review="{{ review.id }}"
+        data-index="{{ forloop.counter0 }}"
+        data-type="video">
+        <source src="{{ media.file.url }}">
+      </video>
+      {% endif %}
+
+      {% if forloop.counter == 3 and review.media.count > 3 %}
+      <div class="media-overlay">
+        +{{ review.media.count|add:"-3" }}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- LIKES / DISLIKES -->
+  <div class="review-actions" data-review="{{ review.id }}">
+    <button class="review-like {% if user in review.likes.all %}active{% endif %}" data-action="like">
+      👍 <span class="like-count">{{ review.likes.count }}</span>
+    </button>
+    <button class="review-dislike {% if user in review.dislikes.all %}active{% endif %}" data-action="dislike">
+      👎 <span class="dislike-count">{{ review.dislikes.count }}</span>
+    </button>
+  </div>
+</div>
+{% endfor %}

@@ -1,0 +1,953 @@
+{% extends 'dashboard/dashboard_base.html' %}
+{% load static %}
+{% load tz %}
+{% block title %}Order Details - {{user.first_name}} {{user.last_name}}{% endblock %}
+
+{% block nav_orders %}active{% endblock %}
+
+{% block extra_css %}
+/* ROOT + RESET */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* PAGE WRAPPER */
+.page-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #788493ff;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.order-details-page {
+    padding: 4px 22px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* ORDER HEADER CARD */
+.order-header-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 2px rgba(16,24,40,0.04);
+}
+
+.order-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.back-link {
+    font-size: 0.8rem;
+    color: #2563eb;
+    text-decoration: none;
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.back-link:hover {
+    color: #1d4ed8;
+}
+
+.order-header-card h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.order-header-right {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-invoice {
+    background: #10b981;
+    color: #ffffff;
+}
+
+.btn-invoice:hover {
+    background: #059669;
+    color: #ffffff;
+}
+
+.tooltip-btn {
+    position: relative;
+}
+
+.tooltip-text {
+    position: absolute;
+    bottom: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.tooltip-btn:hover .tooltip-text {
+    opacity: 1;
+}
+
+/* GRID LAYOUT */
+.order-details-grid {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+/* CARD BASE */
+.card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px 22px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 2px rgba(16,24,40,0.04);
+    margin-bottom: 20px;
+}
+
+.order-left {
+    margin-top: 20px;
+}
+
+.card:first-child {
+    margin-top: 0px;
+}
+
+.order-right .card:first-child {
+    margin-top: 20px;
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #0f172a;
+}
+
+/* ORDER ITEMS TABLE */
+.order-items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.order-items-table thead tr {
+    background: #f8fafc;
+}
+
+.order-items-table th {
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    padding: 12px 8px;
+    border-bottom: 1px solid #e5e7eb;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.order-items-table td {
+    padding: 16px 8px;
+    font-size: 0.88rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    color: #0f172a;
+}
+
+.order-items-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.order-items-table tbody tr:hover {
+    background-color: rgba(37, 99, 235, 0.05);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10), 0 2px 6px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+}
+
+/* PRODUCT CELL */
+.product-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.product-info img {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #f1f5f9;
+    border: 1px solid #e5e7eb;
+}
+
+.product-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.product-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #334155;
+}
+
+.product-meta {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+/* ORDER SUMMARY */
+.order-summary {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px dashed #e5e7eb;
+}
+
+.order-summary .summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+    max-width: 300px;
+    margin-left: auto;
+    color: #475569;
+}
+
+.order-summary .summary-row.total {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #0f172a;
+    padding-top: 8px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* ORDER TIMELINE */
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.timeline-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-secondary {
+    background: #e0f2fe;
+    color: #0369a1;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #bae6fd;
+    color: #356872ff;
+}
+
+.btn-danger {
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-danger:hover {
+    background: #fecaca;
+    color: #884747ff;
+}
+
+.order-timeline {
+    list-style: none;
+    position: relative;
+    padding-left: 28px;
+}
+
+.order-timeline::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: #e2e8f0;
+}
+
+.order-timeline li {
+    position: relative;
+    padding-bottom: 28px;
+    display: flex;
+    gap: 14px;
+}
+
+.order-timeline li:last-child {
+    padding-bottom: 0;
+}
+
+.order-timeline .dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    margin-top: 2px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+.order-timeline li.done .dot {
+    background: #10b981;
+}
+
+.order-timeline li.done .dot::before {
+    content: "✓";
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.order-timeline li.active .dot {
+    background: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+.timeline-content strong {
+    font-size: 0.9rem;
+    color: #0f172a;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.order-timeline li.active .timeline-content strong {
+    color: #2563eb;
+}
+
+.timeline-content p {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 2px;
+}
+
+/* SIDEBAR CARDS */
+.card.small {
+    border-radius: 10px;
+    padding: 18px;
+}
+
+.card.small h4 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card.small p {
+    font-size: 0.8rem;
+    color: #475569;
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.card.small p:last-child {
+    margin-bottom: 0;
+}
+
+.card.small strong {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.card.small:hover {
+    background-color: rgba(125, 141, 174, 0.05);
+    transform: translateY(1px);
+    box-shadow: 0 6px 18px rgba(77, 76, 78, 0.1), 0 2px 6px rgba(91, 88, 78, 0.06);
+    cursor: pointer;
+}
+
+/* LOGISTICS CARD */
+.logistics-icon {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.logistics-icon svg {
+    width: 64px;
+    height: 64px;
+    color: #10b981;
+}
+
+.logistics-info {
+    text-align: center;
+}
+
+.logistics-info h5 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.logistics-info p {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.track-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 12px;
+    width: 100%;
+}
+
+.track-btn:hover {
+    background: #2563eb;
+}
+
+/* CUSTOMER CARD */
+.customer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.view-profile {
+    font-size: 0.75rem;
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+.view-profile:hover {
+    text-decoration: underline;
+}
+
+.customer-info {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.customer-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.customer-details h5 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 2px;
+}
+
+.customer-details span {
+    font-size: 0.72rem;
+    color: #64748b;
+}
+
+.customer-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: #475569;
+}
+
+.contact-item::before {
+    content: "•";
+    color: #cbd5e1;
+    font-weight: bold;
+}
+
+/* PAYMENT CARD */
+.payment-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+}
+
+.payment-row span:first-child {
+    color: #64748b;
+}
+
+.payment-row span:last-child {
+    color: #0f172a;
+    font-weight: 500;
+}
+
+.hover-me:hover {
+    color: #224aa8ff;
+}
+/* ===================== CUSTOMER CARD ===================== */
+
+.card.small {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.customer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.customer-header h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.view-profile {
+  font-size: 0.8rem;
+  color: #3b82f6;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.view-profile:hover {
+  text-decoration: underline;
+}
+
+/* ===================== CUSTOMER INFO ===================== */
+
+.customer-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.customer-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.customer-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.customer-details h5 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+  color: #0f172a;
+}
+
+.customer-details span {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* ===================== CUSTOMER CONTACT ===================== */
+
+.customer-contact {
+  border-top: 1px dashed #e5e7eb;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.contact-item {
+  font-size: 0.85rem;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+    .order-details-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .order-details-page {
+        padding: 20px;
+    }
+
+    .order-header-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .order-items-table {
+        font-size: 0.8rem;
+    }
+
+    .product-info img {
+        width: 44px;
+        height: 44px;
+    }
+}
+{% endblock %}
+
+{% block content %}
+<div class="page-title">Order Details</div>
+<div class="order-details-page">
+
+    <div class="order-details-grid">
+        <div class="order-left">
+            <div class="order-header-card">
+                <div class="order-header-left">
+                    <a href="{% url 'recent_orders' %}" class="back-link">← Back to Orders</a>
+                    <h2 class="hover-me">Order #{{order.order_number}}</h2>
+                    <p style="font-size: 0.8rem; color: #64748b;">
+                        Placed on {{ order.created_at|localtime|date:"d M Y, h:i A" }}
+                    </p>
+                </div>
+                <div class="order-header-right">
+                    <a href="{% url 'download_invoice' order.order_number %}"
+                       class="btn btn-invoice tooltip-btn">
+                        <i class="fa fa-download"></i> Invoice
+                        <span class="tooltip-text">Download Invoice</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- PRODUCTS CARD -->
+            <div class="card">
+                <h3 class="card-title">Product Details</h3>
+
+                <table class="order-items-table">
+                    <thead>
+                        <tr>
+                            <th>Product Details</th>
+                            <th>Item Price</th>
+                            <th>Quantity</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for oi in orderitems %}
+                        <tr>
+                            <td>
+                                <div class="product-info">
+                                    <img src="{{oi.product.images.url}}" alt="{{oi.product.product_name}}">
+                                    <div class="product-details">
+                                        <p class="product-name">{{oi.product.product_name}}</p>
+                                        {% if oi.variations.all %}
+                                          {% for var in oi.variations.all %}
+                                            <span class="product-meta">{{var.variation_category}}: {{var.variation_value}}</span>
+                                          {% endfor %}
+                                        {% else %}
+                                            <span class="product-meta">No variations</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${{oi.product_price}}</td>
+                            <td>{{oi.quantity}}</td>
+                            <td><strong>${{oi.subtotal}}</strong></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span>Sub Total :</span>
+                        <span>${{order.total}}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping Charge :</span>
+                        <span>Free</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Estimated Tax :</span>
+                        <span>${{order.tax}}</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total :</span>
+                        <span>${{order.order_total}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ORDER STATUS CARD -->
+            <div class="card">
+                <div class="timeline-header">
+                    <h3 class="card-title" style="margin-bottom: 0;">Order Status</h3>
+                    <div class="timeline-actions">
+                      {% if order.status == 'New' %}
+                        <a href="{% url 'change_order_address' order.order_number %}" class="btn-secondary">📍 Change Address</a>
+                        <a href="{% url 'cancel_order' order.order_number %}" class="btn-danger"  onclick="return confirm('Are you sure you want to cancel this order?');">❌ Cancel Order</a>
+                      {% endif %}
+                    </div>
+                </div>
+
+                <ul class="order-timeline">
+                    <li class="done">
+                        <span class="dot"></span>
+                        <div class="timeline-content">
+                            <strong>Order Placed - {{order.created_at|localtime|date:"d M Y"}}</strong>
+                            <p>An order has been placed.</p>
+                            <p>{{order.created_at|localtime|date:"d M Y, h:i A"}}</p>
+                            <p style="margin-top: 6px;">Seller has processed your order.</p>
+                            <p>Thu, 16 Dec 2021 - 5:48AM</p>
+                        </div>
+                    </li>
+
+                    <li class="done">
+                        <span class="dot"></span>
+                        <div class="timeline-content">
+                            <strong>Packed - Thu, 16 Dec 2021</strong>
+                            <p>Your item has been picked up by courier partner</p>
+                            <p>Fri, 17 Dec 2021 - 9:45AM</p>
+                        </div>
+                    </li>
+
+                    <li class="active">
+                        <span class="dot"></span>
+                        <div class="timeline-content">
+                            <strong>Shipping - Thu, 16 Dec 2021</strong>
+                            <p>RQK Logistics - MFDS1400457854</p>
+                            <p>Your item has been shipped.</p>
+                            <p>Sat, 18 Dec 2021 - 4:54PM</p>
+                        </div>
+                    </li>
+
+                    <li>
+                        <span class="dot"></span>
+                        <div class="timeline-content">
+                            <strong>Out For Delivery</strong>
+                        </div>
+                    </li>
+
+                    <li>
+                        <span class="dot"></span>
+                        <div class="timeline-content">
+                            <strong>Delivered</strong>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="order-right">
+            <!-- LOGISTICS CARD -->
+            <div class="card small">
+                <h4>🚚 Logistics Details</h4>
+                <div class="logistics-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="1" y="3" width="15" height="13"></rect>
+                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                        <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                        <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                    </svg>
+                </div>
+                <div class="logistics-info">
+                    <h5>RQK Logistics</h5>
+                    <p><strong>ID:</strong> MFDS1400457854</p>
+                    <p><strong>Payment Mode:</strong> Debit Card</p>
+                    <button class="track-btn">Track Order</button>
+                </div>
+            </div>
+
+            <!-- CUSTOMER CARD -->
+            <div class="card small">
+            <div class="customer-header">
+                <h4>👤 Customer Details</h4>
+                <a href="{% url 'profile' %}" class="view-profile">View Profile</a>
+            </div>
+
+            <div class="customer-info">
+                <div class="customer-avatar">
+                <img
+                    src="{% if order.user.profile.profile_pic %}
+                        {{ order.user.profile.profile_pic.url }}
+                        {% else %}
+                        {% static 'images/avatars/default-avatar.png' %}
+                        {% endif %}"
+                    alt="Profile Picture">
+                </div>
+
+                <div class="customer-details">
+                <h5>
+                {{ order.user.full_name|default:order.user.username|title }}
+                </h5>
+                <span>Customer</span>
+                </div>
+            </div>
+
+            <div class="customer-contact">
+                <div class="contact-item">{{ order.user.email }}</div>
+                <div class="contact-item">+{{ order.user.phone_no }}</div>
+            </div>
+            </div>
+
+            <!-- ORDER NOTE CARD -->
+            <div class="card small">
+                <h4>📝 Order Note</h4>
+                {% if order.order_note %}
+                    <p style="font-size: 0.8rem; color: #475569; line-height: 1.6;">
+                        {{ order.order_note }}
+                    </p>
+                {% else %}
+                    <p style="font-size: 0.75rem; color: #94a3b8;">
+                        No order note provided.
+                    </p>
+                {% endif %}
+            </div>
+
+           <!-- BILLING ADDRESS CARD -->
+            <div class="card small">
+            <h4>📍 Billing Address</h4>
+
+            {% if billaddr %}
+                <p><strong>{{ billaddr.first_name }} {{ billaddr.last_name }}</strong></p>
+                <p>+{{ billaddr.phone }}</p>
+                <p>{{ billaddr.address_line_1 }}</p>
+
+                {% if billaddr.address_line_2 %}
+                <p>{{ billaddr.address_line_2 }}</p>
+                {% endif %}
+
+                <p>{{ billaddr.city }} - {{ billaddr.pincode }}</p>
+                <p>{{ billaddr.state }}, {{ billaddr.country }}</p>
+            {% else %}
+                <p style="color:#64748b;">No default address was selected.</p>
+                <p  class="view-profile">
+                Add or select a default address before ordering
+                </p>
+            {% endif %}
+            </div>
+
+
+            <!-- SHIPPING ADDRESS CARD -->
+            <div class="card small">
+                <h4>📦 Shipping Address</h4>
+                <p><strong>{{order.first_name}} {{order.last_name}}</strong></p>
+                <p>+{{order.phone}}</p>
+                <p>{{order.address_line_1}}</p>
+                {% if order.address_line_2 %}
+                    <p>{{order.address_line_2}}</p>
+                {% endif %}
+                <p>{{order.city}} - {{order.pincode}}</p>
+                <p>{{order.state}}, {{order.country}}</p>
+            </div>
+
+            <!-- PAYMENT DETAILS CARD -->
+            <div class="card small">
+                <h4>💳 Payment Details</h4>
+                <div class="payment-row">
+                    <span>Payment Method:</span>
+                    <span>{{payment.payment_method}}</span>
+                </div>
+                <div class="payment-row">
+                    <span>Transaction ID:</span>
+                    <span>#{{payment.payment_id}}</span>
+                </div>
+                <div class="payment-row">
+                    <span>Paid By:</span>
+                    <span>{{payment.user}}</span>
+                </div>
+                <div class="payment-row">
+                    <span>Paid On:</span>
+                    <span>
+                        {{ payment.created_at|localtime|date:"d M Y, h:i A" }}
+                    </span>
+                </div>
+                <div class="payment-row">
+                    <span>Total Amount:</span>
+                    <span><strong>${{payment.amount_paid}}</strong></span>
+                </div>
+                <div class="payment-row">
+                    <span>Status:</span>
+                    <span><strong>{{payment.status}}</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
