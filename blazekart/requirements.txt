@@ -9,8 +9,10 @@ Django==5.2.6
 django-otp==1.6.3
 dnspython==2.8.0
 fonttools==4.61.1
+gunicorn==25.1.0
 idna==3.10
 multipledispatch==1.0.0
+packaging==26.0
 pillow==11.3.0
 pycparser==2.23
 pydyf==0.12.1
@@ -26,4 +28,5 @@ tinyhtml5==2.0.0
 tzdata==2025.2
 urllib3==2.5.0
 webencodings==0.5.1
+whitenoise==6.11.0
 zopfli==0.4.0
